@@ -4,6 +4,7 @@ import type {
   InventoryItem,
   QualityCheck,
   DemandForecast,
+  SupplierRiskExposure,
   SupplyChainMetrics,
 } from "./types";
 
@@ -88,6 +89,48 @@ export const demoDemandForecasts: DemandForecast[] = [
   { id: "df_016", productId: "prd_005", month: "2026-07", forecastedDemand: 3500, actualDemand: null, confidenceLower: 3200, confidenceUpper: 3800, trend: "up" },
   { id: "df_017", productId: "prd_005", month: "2026-08", forecastedDemand: 3800, actualDemand: null, confidenceLower: 3450, confidenceUpper: 4150, trend: "up" },
   { id: "df_018", productId: "prd_005", month: "2026-09", forecastedDemand: 4100, actualDemand: null, confidenceLower: 3700, confidenceUpper: 4500, trend: "up" },
+];
+
+export const demoSupplierRiskExposures: SupplierRiskExposure[] = [
+  {
+    id: "risk_001",
+    supplierId: "sup_004",
+    productId: "prd_004",
+    riskType: "tariff_exposure",
+    severity: "high",
+    region: "Taiwan and ASEAN semiconductor lane",
+    tier: "tier_2",
+    probability: 72,
+    impact: "Tariff or port-delay shock could push A7 chip cover below safety stock in 31 days.",
+    mitigation: "Reserve allocation with Nova, qualify a Malaysia packaging partner, and pre-book air freight for the July ramp.",
+    lastReviewed: "2026-06-12",
+  },
+  {
+    id: "risk_002",
+    supplierId: "sup_003",
+    productId: "prd_003",
+    riskType: "concentration_risk",
+    severity: "medium",
+    region: "North American copper processors",
+    tier: "tier_2",
+    probability: 58,
+    impact: "Copper processor concentration could lift wire costs while AI and grid demand compete for allocation.",
+    mitigation: "Hold six-week bridge stock and negotiate indexed pricing with a second regional processor.",
+    lastReviewed: "2026-06-11",
+  },
+  {
+    id: "risk_003",
+    supplierId: "sup_002",
+    productId: "prd_002",
+    riskType: "subtier_visibility",
+    severity: "high",
+    region: "EU steel mill network",
+    tier: "tier_3",
+    probability: 64,
+    impact: "SteelWorks depends on an unmapped slab mill, leaving duty exposure and mill outage risk opaque.",
+    mitigation: "Request country-of-origin certificates, map the slab mill, and hold purchase orders until documentation clears.",
+    lastReviewed: "2026-06-10",
+  },
 ];
 
 export const demoMetrics: SupplyChainMetrics = {

@@ -11,6 +11,16 @@ export type QualityResult = "pass" | "fail" | "conditional_pass";
 
 export type DemandTrend = "up" | "down" | "stable";
 
+export type SupplierRiskType =
+  | "tariff_exposure"
+  | "subtier_visibility"
+  | "concentration_risk"
+  | "lead_time_volatility";
+
+export type SupplierRiskSeverity = "low" | "medium" | "high" | "critical";
+
+export type SupplierTier = "tier_1" | "tier_2" | "tier_3";
+
 export interface Product {
   id: string;
   name: string;
@@ -68,6 +78,20 @@ export interface DemandForecast {
   confidenceLower: number;
   confidenceUpper: number;
   trend: DemandTrend;
+}
+
+export interface SupplierRiskExposure {
+  id: string;
+  supplierId: string;
+  productId: string;
+  riskType: SupplierRiskType;
+  severity: SupplierRiskSeverity;
+  region: string;
+  tier: SupplierTier;
+  probability: number;
+  impact: string;
+  mitigation: string;
+  lastReviewed: string;
 }
 
 export interface SupplyChainMetrics {

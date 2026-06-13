@@ -4,6 +4,7 @@ import {
   demoInventory,
   demoQualityChecks,
   demoDemandForecasts,
+  demoSupplierRiskExposures,
   demoMetrics,
 } from "@/lib/demo-data";
 import type {
@@ -12,6 +13,7 @@ import type {
   InventoryItem,
   QualityCheck,
   DemandForecast,
+  SupplierRiskExposure,
 } from "@/lib/types";
 
 // --- Reusable components ---
@@ -356,6 +358,123 @@ function SupplierPerformance() {
   );
 }
 
+function riskTypeLabel(riskType: string): string {
+  const labels: Record<string, string> = {
+    tariff_exposure: "Tariff exposure",
+    subtier_visibility: "Sub-tier visibility",
+    concentration_risk: "Concentration risk",
+    lead_time_volatility: "Lead-time volatility",
+  };
+  return labels[riskType] || riskType.replace("_", " ");
+}
+
+function riskSeverityTone(
+  severity: string
+): "green" | "red" | "amber" | "slate" {
+  if (severity === "critical" || severity === "high") return "red";
+  if (severity === "medium") return "amber";
+  if (severity === "low") return "green";
+  return "slate";
+}
+
+function riskSeverityDot(severity: string): string {
+  const dots: Record<string, string> = {
+    critical: "bg-red-500",
+    high: "bg-red-400",
+    medium: "bg-amber-400",
+    low: "bg-emerald-400",
+  };
+  return dots[severity] || "bg-slate-400";
+}
+
+function SupplierRiskCard({ risk }: { risk: SupplierRiskExposure }) {
+  const supplier = findSupplier(risk.supplierId);
+  const product = findProduct(risk.productId);
+  const reviewed = new Date(risk.lastReviewed).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  return (
+    <div className="rounded-xl border border-slate-100 bg-white/90 p-4 shadow-sm">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-block h-2.5 w-2.5 rounded-full ${riskSeverityDot(risk.severity)}`}
+          />
+          <span className="text-sm font-semibold text-slate-900">
+            {riskTypeLabel(risk.riskType)}
+          </span>
+        </div>
+        <Badge tone={riskSeverityTone(risk.severity)}>
+          {risk.severity}
+        </Badge>
+      </div>
+      <div className="text-xs text-slate-500">
+        {supplier?.name || risk.supplierId} · {product?.sku || risk.productId}
+      </div>
+      <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+        <div>
+          <div className="text-slate-400">Lane</div>
+          <div className="font-semibold text-slate-700">{risk.region}</div>
+        </div>
+        <div>
+          <div className="text-slate-400">Tier</div>
+          <div className="font-semibold text-slate-700">
+            {risk.tier.replace("_", " ").toUpperCase()}
+          </div>
+        </div>
+        <div>
+          <div className="text-slate-400">Risk</div>
+          <div className="font-semibold text-slate-700">
+            {risk.probability}%
+          </div>
+        </div>
+      </div>
+      <p className="mt-2 text-xs leading-relaxed text-slate-600">
+        {risk.impact}
+      </p>
+      <p className="mt-2 text-xs leading-relaxed text-slate-500">
+        <span className="font-semibold text-slate-700">Mitigation:</span>{" "}
+        {risk.mitigation}
+      </p>
+      <div className="mt-2 text-[11px] uppercase tracking-wide text-slate-400">
+        Reviewed {reviewed}
+      </div>
+    </div>
+  );
+}
+
+function SupplierRiskPanel() {
+  const highRiskCount = demoSupplierRiskExposures.filter((risk) =>
+    ["high", "critical"].includes(risk.severity)
+  ).length;
+
+  return (
+    <Card>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-lg font-bold text-slate-900">
+          Supplier Risk Watch
+        </h2>
+        <Badge tone={highRiskCount > 0 ? "red" : "green"}>
+          {highRiskCount} high
+        </Badge>
+      </div>
+      <p className="mb-4 text-xs leading-relaxed text-slate-500">
+        Tracks tariff, concentration, and sub-tier visibility risks before they
+        cascade into shortages or margin surprises.
+      </p>
+      <div className="space-y-3">
+        {[...demoSupplierRiskExposures]
+          .sort((a, b) => b.probability - a.probability)
+          .map((risk) => (
+            <SupplierRiskCard key={risk.id} risk={risk} />
+          ))}
+      </div>
+    </Card>
+  );
+}
+
 // --- Quality control panel ---
 
 function QualityCheckRow({ check }: { check: QualityCheck }) {
@@ -662,6 +781,7 @@ export default function Home() {
         {/* Side column */}
         <div className="space-y-6">
           <LowStockAlertPanel />
+          <SupplierRiskPanel />
           <QualityControlPanel />
         </div>
       </div>

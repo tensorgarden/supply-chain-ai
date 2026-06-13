@@ -5,6 +5,7 @@ import {
   demoInventory,
   demoQualityChecks,
   demoDemandForecasts,
+  demoSupplierRiskExposures,
   demoMetrics,
 } from "@/lib/demo-data";
 
@@ -104,5 +105,46 @@ describe("Supply Chain AI -- demo data integrity", () => {
       expect(item.reorderQuantity).toBeGreaterThan(0);
       expect(item.quantityReserved).toBeLessThanOrEqual(item.quantityOnHand);
     }
+  });
+
+  it("supplier risk exposures reference known products and suppliers", () => {
+    const productIds = new Set(demoProducts.map((p) => p.id));
+    const supplierIds = new Set(demoSuppliers.map((s) => s.id));
+
+    for (const risk of demoSupplierRiskExposures) {
+      expect(
+        supplierIds.has(risk.supplierId),
+        `Risk ${risk.id} has unknown supplier ${risk.supplierId}`
+      ).toBe(true);
+      expect(
+        productIds.has(risk.productId),
+        `Risk ${risk.id} has unknown product ${risk.productId}`
+      ).toBe(true);
+    }
+  });
+
+  it("high supplier risks include concrete mitigation and review dates", () => {
+    const highRisks = demoSupplierRiskExposures.filter((risk) =>
+      ["high", "critical"].includes(risk.severity)
+    );
+
+    expect(highRisks.length).toBeGreaterThan(0);
+    for (const risk of highRisks) {
+      expect(risk.probability).toBeGreaterThanOrEqual(50);
+      expect(risk.probability).toBeLessThanOrEqual(100);
+      expect(risk.mitigation.length).toBeGreaterThan(40);
+      expect(new Date(risk.lastReviewed).toString()).not.toBe("Invalid Date");
+    }
+  });
+
+  it("maps tariff and concentration exposure beyond first-tier suppliers", () => {
+    const upstreamRisks = demoSupplierRiskExposures.filter(
+      (risk) => risk.tier !== "tier_1"
+    );
+    const riskTypes = new Set(upstreamRisks.map((risk) => risk.riskType));
+
+    expect(upstreamRisks.length).toBeGreaterThanOrEqual(2);
+    expect(riskTypes.has("tariff_exposure")).toBe(true);
+    expect(riskTypes.has("concentration_risk")).toBe(true);
   });
 });
