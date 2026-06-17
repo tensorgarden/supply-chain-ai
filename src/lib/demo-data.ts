@@ -131,6 +131,19 @@ export const demoSupplierRiskExposures: SupplierRiskExposure[] = [
     mitigation: "Request country-of-origin certificates, map the slab mill, and hold purchase orders until documentation clears.",
     lastReviewed: "2026-06-10",
   },
+  {
+    id: "risk_004",
+    supplierId: "sup_006",
+    productId: "prd_007",
+    riskType: "lead_time_volatility",
+    severity: "high",
+    region: "Mexico tooling and plastics corridor",
+    tier: "tier_2",
+    probability: 68,
+    impact: "Injection mold lead times swung from 15 to 31 days over the last eight weeks as tooling shops run at 94% capacity; housing shortages would idle three downstream assembly lines.",
+    mitigation: "Issue a blanket PO with a Monterrey backup tooling partner, enforce ±3-day delivery windows with penalty clauses, and buffer 10 days of safety stock above ROP until the secondary source is qualified.",
+    lastReviewed: "2026-06-15",
+  },
 ];
 
 export const demoMetrics: SupplyChainMetrics = {

@@ -147,4 +147,29 @@ describe("Supply Chain AI -- demo data integrity", () => {
     expect(riskTypes.has("tariff_exposure")).toBe(true);
     expect(riskTypes.has("concentration_risk")).toBe(true);
   });
+
+  it("covers all four SupplierRiskType values with at least one demo risk record each", () => {
+    const riskTypes = new Set(
+      demoSupplierRiskExposures.map((risk) => risk.riskType)
+    );
+    expect(riskTypes.has("tariff_exposure")).toBe(true);
+    expect(riskTypes.has("subtier_visibility")).toBe(true);
+    expect(riskTypes.has("concentration_risk")).toBe(true);
+    expect(riskTypes.has("lead_time_volatility")).toBe(true);
+    expect(riskTypes.size).toBe(4);
+  });
+
+  it("lead time volatility exposure is mapped beyond first-tier suppliers", () => {
+    const upstreamVolatility = demoSupplierRiskExposures.filter(
+      (risk) =>
+        risk.riskType === "lead_time_volatility" && risk.tier !== "tier_1"
+    );
+
+    expect(upstreamVolatility.length).toBeGreaterThanOrEqual(1);
+    for (const risk of upstreamVolatility) {
+      expect(risk.probability).toBeGreaterThanOrEqual(50);
+      expect(risk.mitigation.length).toBeGreaterThan(40);
+      expect(new Date(risk.lastReviewed).toString()).not.toBe("Invalid Date");
+    }
+  });
 });
