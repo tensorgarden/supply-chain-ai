@@ -5,6 +5,7 @@ import {
   demoQualityChecks,
   demoDemandForecasts,
   demoSupplierRiskExposures,
+  demoPurchaseOrders,
   demoMetrics,
 } from "@/lib/demo-data";
 import type {
@@ -96,6 +97,11 @@ function StatusDot({ status }: { status: string }) {
     low: "bg-red-400",
     ok: "bg-emerald-400",
     critical: "bg-red-400",
+    pending: "bg-slate-400",
+    confirmed: "bg-blue-400",
+    in_transit: "bg-amber-400",
+    received: "bg-emerald-400",
+    delayed: "bg-red-400",
   };
   return (
     <span
@@ -750,6 +756,91 @@ function LowStockAlertPanel() {
   );
 }
 
+// --- Recent purchase orders ---
+
+function orderStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    pending: "Pending",
+    confirmed: "Confirmed",
+    in_transit: "In transit",
+    received: "Received",
+    delayed: "Delayed",
+  };
+  return labels[status] || status;
+}
+
+function orderStatusTone(
+  status: string
+): "green" | "red" | "amber" | "blue" | "slate" {
+  if (status === "received") return "green";
+  if (status === "delayed") return "red";
+  if (status === "in_transit") return "amber";
+  if (status === "confirmed") return "blue";
+  return "slate";
+}
+
+function RecentOrdersPanel() {
+  const sorted = [...demoPurchaseOrders].sort(
+    (a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
+  );
+
+  return (
+    <Card>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-bold text-slate-900">Recent Orders</h2>
+        <Badge tone={demoPurchaseOrders.some((po) => po.status === "delayed") ? "red" : "blue"}>
+          {demoMetrics.pendingOrders} open
+        </Badge>
+      </div>
+      <p className="mb-4 text-xs leading-relaxed text-slate-500">
+        Purchase order lifecycle across suppliers. Delayed orders surface
+        before they become stockout events.
+      </p>
+      <div className="space-y-2">
+        {sorted.map((po) => {
+          const product = findProduct(po.productId);
+          const supplier = findSupplier(po.supplierId);
+          const total = (po.quantity * po.unitPrice).toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          });
+          const orderDate = new Date(po.orderDate).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
+
+          return (
+            <div
+              key={po.id}
+              className="rounded-lg border border-slate-100 bg-white/80 p-3"
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <StatusDot status={po.status} />
+                <span className="text-sm font-semibold text-slate-900 truncate">
+                  {product?.name || po.productId}
+                </span>
+                <Badge tone={orderStatusTone(po.status)}>
+                  {orderStatusLabel(po.status)}
+                </Badge>
+              </div>
+              <div className="text-xs text-slate-500 grid grid-cols-2 gap-x-4 gap-y-0.5">
+                <span>
+                  {supplier?.code || po.supplierId} · {po.quantity.toLocaleString()} units
+                </span>
+                <span>{total}</span>
+                <span>Ordered {orderDate}</span>
+                <span>{po.status === "delayed" ? "Overdue" : `Due ${new Date(po.expectedDeliveryDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
 // --- Main page ---
 
 export default function Home() {
@@ -781,6 +872,7 @@ export default function Home() {
         {/* Side column */}
         <div className="space-y-6">
           <LowStockAlertPanel />
+          <RecentOrdersPanel />
           <SupplierRiskPanel />
           <QualityControlPanel />
         </div>

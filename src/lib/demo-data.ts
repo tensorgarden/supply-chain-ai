@@ -5,6 +5,7 @@ import type {
   QualityCheck,
   DemandForecast,
   SupplierRiskExposure,
+  PurchaseOrder,
   SupplyChainMetrics,
 } from "./types";
 
@@ -146,13 +147,88 @@ export const demoSupplierRiskExposures: SupplierRiskExposure[] = [
   },
 ];
 
+export const demoPurchaseOrders: PurchaseOrder[] = [
+  {
+    id: "po_001",
+    productId: "prd_004",
+    supplierId: "sup_004",
+    quantity: 3000,
+    unitPrice: 12.40,
+    status: "in_transit",
+    orderDate: "2026-06-02",
+    expectedDeliveryDate: "2026-06-22",
+    actualDeliveryDate: null,
+  },
+  {
+    id: "po_002",
+    productId: "prd_002",
+    supplierId: "sup_002",
+    quantity: 50,
+    unitPrice: 680.00,
+    status: "delayed",
+    orderDate: "2026-05-12",
+    expectedDeliveryDate: "2026-06-03",
+    actualDeliveryDate: null,
+  },
+  {
+    id: "po_003",
+    productId: "prd_005",
+    supplierId: "sup_005",
+    quantity: 2000,
+    unitPrice: 8.90,
+    status: "confirmed",
+    orderDate: "2026-06-10",
+    expectedDeliveryDate: "2026-07-08",
+    actualDeliveryDate: null,
+  },
+  {
+    id: "po_004",
+    productId: "prd_008",
+    supplierId: "sup_001",
+    quantity: 100,
+    unitPrice: 87.00,
+    status: "pending",
+    orderDate: "2026-06-14",
+    expectedDeliveryDate: "2026-07-14",
+    actualDeliveryDate: null,
+  },
+  {
+    id: "po_005",
+    productId: "prd_001",
+    supplierId: "sup_001",
+    quantity: 300,
+    unitPrice: 42.50,
+    status: "received",
+    orderDate: "2026-05-20",
+    expectedDeliveryDate: "2026-06-03",
+    actualDeliveryDate: "2026-06-02",
+  },
+  {
+    id: "po_006",
+    productId: "prd_003",
+    supplierId: "sup_003",
+    quantity: 1000,
+    unitPrice: 18.75,
+    status: "confirmed",
+    orderDate: "2026-06-08",
+    expectedDeliveryDate: "2026-06-18",
+    actualDeliveryDate: null,
+  },
+];
+
+const pendingStatuses = new Set(["pending", "confirmed", "in_transit", "delayed"]);
+
 export const demoMetrics: SupplyChainMetrics = {
-  totalProducts: 15,
-  activeSuppliers: 8,
+  totalProducts: demoProducts.length,
+  activeSuppliers: demoSuppliers.length,
   totalInventoryValue: 2873500,
   forecastAccuracy: 91.4,
-  lowStockItems: 9,
+  lowStockItems: demoInventory.filter(
+    (item) => item.quantityOnHand <= item.reorderPoint
+  ).length,
   qualityPassRate: 83.3,
   onTimeDeliveryAvg: 87.9,
-  pendingOrders: 12,
+  pendingOrders: demoPurchaseOrders.filter((po) =>
+    pendingStatuses.has(po.status)
+  ).length,
 };

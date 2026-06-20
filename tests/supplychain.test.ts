@@ -6,6 +6,7 @@ import {
   demoQualityChecks,
   demoDemandForecasts,
   demoSupplierRiskExposures,
+  demoPurchaseOrders,
   demoMetrics,
 } from "@/lib/demo-data";
 
@@ -171,5 +172,91 @@ describe("Supply Chain AI -- demo data integrity", () => {
       expect(risk.mitigation.length).toBeGreaterThan(40);
       expect(new Date(risk.lastReviewed).toString()).not.toBe("Invalid Date");
     }
+  });
+
+  describe("purchase orders -- execution tracking", () => {
+    it("has at least 5 purchase orders", () => {
+      expect(demoPurchaseOrders.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it("every purchase order references a valid product and supplier", () => {
+      const productIds = new Set(demoProducts.map((p) => p.id));
+      const supplierIds = new Set(demoSuppliers.map((s) => s.id));
+
+      for (const po of demoPurchaseOrders) {
+        expect(
+          productIds.has(po.productId),
+          `PO ${po.id} has unknown product ${po.productId}`
+        ).toBe(true);
+        expect(
+          supplierIds.has(po.supplierId),
+          `PO ${po.id} has unknown supplier ${po.supplierId}`
+        ).toBe(true);
+      }
+    });
+
+    it("purchase order statuses are valid", () => {
+      const validStatuses = [
+        "pending",
+        "confirmed",
+        "in_transit",
+        "received",
+        "delayed",
+      ];
+      for (const po of demoPurchaseOrders) {
+        expect(validStatuses).toContain(po.status);
+      }
+    });
+
+    it("received orders have actualDeliveryDate set", () => {
+      const received = demoPurchaseOrders.filter(
+        (po) => po.status === "received"
+      );
+      expect(received.length).toBeGreaterThanOrEqual(1);
+      for (const po of received) {
+        expect(po.actualDeliveryDate).not.toBeNull();
+        expect(new Date(po.actualDeliveryDate!).toString()).not.toBe(
+          "Invalid Date"
+        );
+      }
+    });
+
+    it("non-received orders have null actualDeliveryDate", () => {
+      const notReceived = demoPurchaseOrders.filter(
+        (po) => po.status !== "received"
+      );
+      expect(notReceived.length).toBeGreaterThanOrEqual(1);
+      for (const po of notReceived) {
+        expect(po.actualDeliveryDate).toBeNull();
+      }
+    });
+
+    it("pendingOrders metric matches non-received, non-cancelled count", () => {
+      const pendingStatuses = new Set([
+        "pending",
+        "confirmed",
+        "in_transit",
+        "delayed",
+      ]);
+      const count = demoPurchaseOrders.filter((po) =>
+        pendingStatuses.has(po.status)
+      ).length;
+      expect(demoMetrics.pendingOrders).toBe(count);
+    });
+
+    it("delayed orders have expectedDeliveryDate in the past", () => {
+      const delayed = demoPurchaseOrders.filter(
+        (po) => po.status === "delayed"
+      );
+      expect(delayed.length).toBeGreaterThanOrEqual(1);
+      for (const po of delayed) {
+        expect(new Date(po.expectedDeliveryDate).toString()).not.toBe(
+          "Invalid Date"
+        );
+        expect(new Date(po.expectedDeliveryDate).getTime()).toBeLessThan(
+          Date.now()
+        );
+      }
+    });
   });
 });

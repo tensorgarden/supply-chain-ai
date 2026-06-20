@@ -94,6 +94,25 @@ export interface SupplierRiskExposure {
   lastReviewed: string;
 }
 
+export type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "in_transit"
+  | "received"
+  | "delayed";
+
+export interface PurchaseOrder {
+  id: string;
+  productId: string;
+  supplierId: string;
+  quantity: number;
+  unitPrice: number;
+  status: OrderStatus;
+  orderDate: string;
+  expectedDeliveryDate: string;
+  actualDeliveryDate: string | null;
+}
+
 export interface SupplyChainMetrics {
   totalProducts: number;
   activeSuppliers: number;
