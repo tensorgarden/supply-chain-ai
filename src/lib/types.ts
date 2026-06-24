@@ -101,6 +101,15 @@ export type OrderStatus =
   | "received"
   | "delayed";
 
+export type OrderDelayRisk = "none" | "watch" | "at_risk" | "delayed";
+
+export type OrderMitigationAction =
+  | "none"
+  | "expedite_carrier"
+  | "reroute_lane"
+  | "split_shipment"
+  | "supplier_recovery_call";
+
 export interface PurchaseOrder {
   id: string;
   productId: string;
@@ -111,6 +120,10 @@ export interface PurchaseOrder {
   orderDate: string;
   expectedDeliveryDate: string;
   actualDeliveryDate: string | null;
+  delayRisk: OrderDelayRisk;
+  mitigationAction: OrderMitigationAction;
+  lastCarrierUpdate: string | null;
+  estimatedDelayDays: number;
 }
 
 export interface SupplyChainMetrics {

@@ -208,6 +208,47 @@ describe("Supply Chain AI -- demo data integrity", () => {
       }
     });
 
+    it("delay-risk fields use valid intervention labels", () => {
+      const validDelayRisks = ["none", "watch", "at_risk", "delayed"];
+      const validMitigationActions = [
+        "none",
+        "expedite_carrier",
+        "reroute_lane",
+        "split_shipment",
+        "supplier_recovery_call",
+      ];
+
+      for (const po of demoPurchaseOrders) {
+        expect(validDelayRisks).toContain(po.delayRisk);
+        expect(validMitigationActions).toContain(po.mitigationAction);
+        expect(po.estimatedDelayDays).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it("flags disrupted orders with carrier updates and mitigation actions", () => {
+      const disruptedOrders = demoPurchaseOrders.filter((po) =>
+        ["at_risk", "delayed"].includes(po.delayRisk)
+      );
+
+      expect(disruptedOrders.length).toBeGreaterThanOrEqual(2);
+      expect(
+        disruptedOrders.some((po) =>
+          ["reroute_lane", "split_shipment", "expedite_carrier"].includes(
+            po.mitigationAction
+          )
+        )
+      ).toBe(true);
+
+      for (const po of disruptedOrders) {
+        expect(po.mitigationAction).not.toBe("none");
+        expect(po.estimatedDelayDays).toBeGreaterThan(0);
+        expect(po.lastCarrierUpdate).not.toBeNull();
+        expect(new Date(po.lastCarrierUpdate!).toString()).not.toBe(
+          "Invalid Date"
+        );
+      }
+    });
+
     it("received orders have actualDeliveryDate set", () => {
       const received = demoPurchaseOrders.filter(
         (po) => po.status === "received"
@@ -218,6 +259,9 @@ describe("Supply Chain AI -- demo data integrity", () => {
         expect(new Date(po.actualDeliveryDate!).toString()).not.toBe(
           "Invalid Date"
         );
+        expect(po.delayRisk).toBe("none");
+        expect(po.mitigationAction).toBe("none");
+        expect(po.estimatedDelayDays).toBe(0);
       }
     });
 

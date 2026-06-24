@@ -158,6 +158,10 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     orderDate: "2026-06-02",
     expectedDeliveryDate: "2026-06-22",
     actualDeliveryDate: null,
+    delayRisk: "at_risk",
+    mitigationAction: "split_shipment",
+    lastCarrierUpdate: "2026-06-18T14:30:00Z",
+    estimatedDelayDays: 2,
   },
   {
     id: "po_002",
@@ -169,6 +173,10 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     orderDate: "2026-05-12",
     expectedDeliveryDate: "2026-06-03",
     actualDeliveryDate: null,
+    delayRisk: "delayed",
+    mitigationAction: "reroute_lane",
+    lastCarrierUpdate: "2026-06-04T09:15:00Z",
+    estimatedDelayDays: 5,
   },
   {
     id: "po_003",
@@ -180,6 +188,10 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     orderDate: "2026-06-10",
     expectedDeliveryDate: "2026-07-08",
     actualDeliveryDate: null,
+    delayRisk: "watch",
+    mitigationAction: "supplier_recovery_call",
+    lastCarrierUpdate: "2026-06-13T11:00:00Z",
+    estimatedDelayDays: 1,
   },
   {
     id: "po_004",
@@ -191,6 +203,10 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     orderDate: "2026-06-14",
     expectedDeliveryDate: "2026-07-14",
     actualDeliveryDate: null,
+    delayRisk: "none",
+    mitigationAction: "none",
+    lastCarrierUpdate: null,
+    estimatedDelayDays: 0,
   },
   {
     id: "po_005",
@@ -202,6 +218,10 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     orderDate: "2026-05-20",
     expectedDeliveryDate: "2026-06-03",
     actualDeliveryDate: "2026-06-02",
+    delayRisk: "none",
+    mitigationAction: "none",
+    lastCarrierUpdate: "2026-06-02T16:00:00Z",
+    estimatedDelayDays: 0,
   },
   {
     id: "po_006",
@@ -213,6 +233,10 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     orderDate: "2026-06-08",
     expectedDeliveryDate: "2026-06-18",
     actualDeliveryDate: null,
+    delayRisk: "at_risk",
+    mitigationAction: "expedite_carrier",
+    lastCarrierUpdate: "2026-06-18T08:45:00Z",
+    estimatedDelayDays: 3,
   },
 ];
 
