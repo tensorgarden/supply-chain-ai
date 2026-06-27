@@ -419,7 +419,7 @@ function SupplierRiskCard({ risk }: { risk: SupplierRiskExposure }) {
       <div className="text-xs text-slate-500">
         {supplier?.name || risk.supplierId} · {product?.sku || risk.productId}
       </div>
-      <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+      <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
         <div>
           <div className="text-slate-400">Lane</div>
           <div className="font-semibold text-slate-700">{risk.region}</div>
@@ -436,6 +436,12 @@ function SupplierRiskCard({ risk }: { risk: SupplierRiskExposure }) {
             {risk.probability}%
           </div>
         </div>
+        <div>
+          <div className="text-slate-400">Response</div>
+          <div className="font-semibold text-slate-700">
+            {risk.responseWindowDays}d
+          </div>
+        </div>
       </div>
       <p className="mt-2 text-xs leading-relaxed text-slate-600">
         {risk.impact}
@@ -444,8 +450,12 @@ function SupplierRiskCard({ risk }: { risk: SupplierRiskExposure }) {
         <span className="font-semibold text-slate-700">Mitigation:</span>{" "}
         {risk.mitigation}
       </p>
+      <p className="mt-2 text-xs leading-relaxed text-slate-500">
+        <span className="font-semibold text-slate-700">Regional fallback:</span>{" "}
+        {risk.regionalFallback}
+      </p>
       <div className="mt-2 text-[11px] uppercase tracking-wide text-slate-400">
-        Reviewed {reviewed}
+        Reviewed {reviewed} · Owner {risk.decisionOwner}
       </div>
     </div>
   );
@@ -467,8 +477,8 @@ function SupplierRiskPanel() {
         </Badge>
       </div>
       <p className="mb-4 text-xs leading-relaxed text-slate-500">
-        Tracks tariff, concentration, and sub-tier visibility risks before they
-        cascade into shortages or margin surprises.
+        Tracks tariff, concentration, sub-tier visibility, and regional fallback
+        playbooks before risks cascade into shortages or margin surprises.
       </p>
       <div className="space-y-3">
         {[...demoSupplierRiskExposures]

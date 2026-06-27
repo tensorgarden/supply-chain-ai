@@ -89,6 +89,9 @@ export interface SupplierRiskExposure {
   region: string;
   tier: SupplierTier;
   probability: number;
+  responseWindowDays: number;
+  regionalFallback: string;
+  decisionOwner: string;
   impact: string;
   mitigation: string;
   lastReviewed: string;

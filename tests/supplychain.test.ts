@@ -160,6 +160,25 @@ describe("Supply Chain AI -- demo data integrity", () => {
     expect(riskTypes.size).toBe(4);
   });
 
+  it("turns supplier risks into time-bound regional reconfiguration plans", () => {
+    const highRisks = demoSupplierRiskExposures.filter((risk) =>
+      ["high", "critical"].includes(risk.severity)
+    );
+
+    expect(highRisks.length).toBeGreaterThan(0);
+    for (const risk of demoSupplierRiskExposures) {
+      expect(risk.responseWindowDays).toBeGreaterThan(0);
+      expect(risk.responseWindowDays).toBeLessThanOrEqual(14);
+      expect(risk.regionalFallback.length).toBeGreaterThan(60);
+      expect(risk.decisionOwner).toContain(",");
+    }
+
+    for (const risk of highRisks) {
+      expect(risk.responseWindowDays).toBeLessThanOrEqual(8);
+      expect(risk.regionalFallback).not.toContain("TBD");
+    }
+  });
+
   it("lead time volatility exposure is mapped beyond first-tier suppliers", () => {
     const upstreamVolatility = demoSupplierRiskExposures.filter(
       (risk) =>
