@@ -113,6 +113,12 @@ export type OrderMitigationAction =
   | "split_shipment"
   | "supplier_recovery_call";
 
+export type CustomsClearanceStatus =
+  | "domestic"
+  | "documents_ready"
+  | "broker_review"
+  | "customs_hold";
+
 export interface PurchaseOrder {
   id: string;
   productId: string;
@@ -127,6 +133,9 @@ export interface PurchaseOrder {
   mitigationAction: OrderMitigationAction;
   lastCarrierUpdate: string | null;
   estimatedDelayDays: number;
+  customsClearanceStatus: CustomsClearanceStatus;
+  customsBrokerEta: string | null;
+  customsDelayReason: string | null;
 }
 
 export interface SupplyChainMetrics {

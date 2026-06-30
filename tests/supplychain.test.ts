@@ -244,6 +244,47 @@ describe("Supply Chain AI -- demo data integrity", () => {
       }
     });
 
+    it("tracks customs clearance risk for cross-border purchase orders", () => {
+      const validCustomsStatuses = [
+        "domestic",
+        "documents_ready",
+        "broker_review",
+        "customs_hold",
+      ];
+      const reviewRequiredStatuses = ["broker_review", "customs_hold"];
+
+      for (const po of demoPurchaseOrders) {
+        expect(validCustomsStatuses).toContain(po.customsClearanceStatus);
+
+        if (reviewRequiredStatuses.includes(po.customsClearanceStatus)) {
+          expect(po.customsBrokerEta).not.toBeNull();
+          expect(new Date(po.customsBrokerEta!).toString()).not.toBe(
+            "Invalid Date"
+          );
+          expect(po.customsDelayReason?.length ?? 0).toBeGreaterThan(60);
+          expect(po.mitigationAction).not.toBe("none");
+          expect(po.estimatedDelayDays).toBeGreaterThan(0);
+        }
+      }
+    });
+
+    it("keeps cleared or domestic purchase orders free of customs-hold reasons", () => {
+      const clearedOrders = demoPurchaseOrders.filter((po) =>
+        ["domestic", "documents_ready"].includes(po.customsClearanceStatus)
+      );
+
+      expect(clearedOrders.length).toBeGreaterThanOrEqual(2);
+      for (const po of clearedOrders) {
+        expect(po.customsDelayReason).toBeNull();
+        if (po.customsClearanceStatus === "domestic") {
+          expect(po.customsBrokerEta).toBeNull();
+        }
+        if (po.status === "received") {
+          expect(po.customsClearanceStatus).not.toBe("customs_hold");
+        }
+      }
+    });
+
     it("flags disrupted orders with carrier updates and mitigation actions", () => {
       const disruptedOrders = demoPurchaseOrders.filter((po) =>
         ["at_risk", "delayed"].includes(po.delayRisk)

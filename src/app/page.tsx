@@ -15,6 +15,7 @@ import type {
   QualityCheck,
   DemandForecast,
   SupplierRiskExposure,
+  PurchaseOrder,
 } from "@/lib/types";
 
 // --- Reusable components ---
@@ -789,6 +790,39 @@ function orderStatusTone(
   return "slate";
 }
 
+function customsStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    domestic: "Domestic",
+    documents_ready: "Docs ready",
+    broker_review: "Broker review",
+    customs_hold: "Customs hold",
+  };
+  return labels[status] || status.replace("_", " ");
+}
+
+function customsStatusTone(
+  status: string
+): "green" | "red" | "amber" | "blue" | "slate" {
+  if (status === "customs_hold") return "red";
+  if (status === "broker_review") return "amber";
+  if (status === "documents_ready") return "blue";
+  if (status === "domestic") return "green";
+  return "slate";
+}
+
+function customsClearanceNote(po: PurchaseOrder): string {
+  if (po.customsDelayReason) return po.customsDelayReason;
+  if (po.customsBrokerEta) {
+    return `Broker ETA ${new Date(po.customsBrokerEta).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    })}`;
+  }
+  return po.customsClearanceStatus === "domestic"
+    ? "No cross-border clearance required"
+    : "Customs documentation packet is ready";
+}
+
 function RecentOrdersPanel() {
   const sorted = [...demoPurchaseOrders].sort(
     (a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
@@ -834,6 +868,9 @@ function RecentOrdersPanel() {
                 <Badge tone={orderStatusTone(po.status)}>
                   {orderStatusLabel(po.status)}
                 </Badge>
+                <Badge tone={customsStatusTone(po.customsClearanceStatus)}>
+                  {customsStatusLabel(po.customsClearanceStatus)}
+                </Badge>
               </div>
               <div className="text-xs text-slate-500 grid grid-cols-2 gap-x-4 gap-y-0.5">
                 <span>
@@ -842,6 +879,10 @@ function RecentOrdersPanel() {
                 <span>{total}</span>
                 <span>Ordered {orderDate}</span>
                 <span>{po.status === "delayed" ? "Overdue" : `Due ${new Date(po.expectedDeliveryDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}</span>
+              </div>
+              <div className="mt-2 text-xs leading-relaxed text-slate-500">
+                <span className="font-semibold text-slate-700">Customs:</span>{" "}
+                {customsClearanceNote(po)}
               </div>
             </div>
           );

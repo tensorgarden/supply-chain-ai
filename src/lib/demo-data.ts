@@ -174,6 +174,9 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     mitigationAction: "split_shipment",
     lastCarrierUpdate: "2026-06-18T14:30:00Z",
     estimatedDelayDays: 2,
+    customsClearanceStatus: "broker_review",
+    customsBrokerEta: "2026-06-19T18:00:00Z",
+    customsDelayReason: "Broker reviewing country-of-origin packet before the Singapore transload split shipment is released.",
   },
   {
     id: "po_002",
@@ -189,6 +192,9 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     mitigationAction: "reroute_lane",
     lastCarrierUpdate: "2026-06-04T09:15:00Z",
     estimatedDelayDays: 5,
+    customsClearanceStatus: "customs_hold",
+    customsBrokerEta: "2026-06-06T12:00:00Z",
+    customsDelayReason: "Country-of-origin certificate mismatch at the Rotterdam broker desk; duty review must clear before the lane reroute moves.",
   },
   {
     id: "po_003",
@@ -204,6 +210,9 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     mitigationAction: "supplier_recovery_call",
     lastCarrierUpdate: "2026-06-13T11:00:00Z",
     estimatedDelayDays: 1,
+    customsClearanceStatus: "documents_ready",
+    customsBrokerEta: null,
+    customsDelayReason: null,
   },
   {
     id: "po_004",
@@ -219,6 +228,9 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     mitigationAction: "none",
     lastCarrierUpdate: null,
     estimatedDelayDays: 0,
+    customsClearanceStatus: "domestic",
+    customsBrokerEta: null,
+    customsDelayReason: null,
   },
   {
     id: "po_005",
@@ -234,6 +246,9 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     mitigationAction: "none",
     lastCarrierUpdate: "2026-06-02T16:00:00Z",
     estimatedDelayDays: 0,
+    customsClearanceStatus: "documents_ready",
+    customsBrokerEta: null,
+    customsDelayReason: null,
   },
   {
     id: "po_006",
@@ -249,6 +264,9 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
     mitigationAction: "expedite_carrier",
     lastCarrierUpdate: "2026-06-18T08:45:00Z",
     estimatedDelayDays: 3,
+    customsClearanceStatus: "broker_review",
+    customsBrokerEta: "2026-06-18T16:30:00Z",
+    customsDelayReason: "USMCA certificate recheck for the copper origin lot split; expedited carrier is waiting on broker release.",
   },
 ];
 
