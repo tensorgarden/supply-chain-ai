@@ -15,7 +15,8 @@ export type SupplierRiskType =
   | "tariff_exposure"
   | "subtier_visibility"
   | "concentration_risk"
-  | "lead_time_volatility";
+  | "lead_time_volatility"
+  | "capacity_bottleneck";
 
 export type SupplierRiskSeverity = "low" | "medium" | "high" | "critical";
 

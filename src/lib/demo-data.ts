@@ -157,6 +157,22 @@ export const demoSupplierRiskExposures: SupplierRiskExposure[] = [
     mitigation: "Issue a blanket PO with a Monterrey backup tooling partner, enforce ±3-day delivery windows with penalty clauses, and buffer 10 days of safety stock above ROP until the secondary source is qualified.",
     lastReviewed: "2026-06-15",
   },
+  {
+    id: "risk_005",
+    supplierId: "sup_004",
+    productId: "prd_006",
+    riskType: "capacity_bottleneck",
+    severity: "critical",
+    region: "ASEAN passive components allocation pool",
+    tier: "tier_2",
+    probability: 81,
+    responseWindowDays: 4,
+    regionalFallback: "Route July capacitor demand to the qualified Vietnam partner and reserve emergency allocation with the Korean distributor before the next build freeze.",
+    decisionOwner: "Noah Kim, electronics supply planner",
+    impact: "Capacitor allocation is constrained while available stock covers only nine days of production; a bottleneck would stall control panel and motor builds before replacement supply arrives.",
+    mitigation: "Approve dual-source allocation, pull in two weeks of buffer stock, and run daily available-to-promise checks until the constrained capacity release is confirmed.",
+    lastReviewed: "2026-07-03",
+  },
 ];
 
 export const demoPurchaseOrders: PurchaseOrder[] = [

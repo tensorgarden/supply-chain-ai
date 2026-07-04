@@ -371,6 +371,7 @@ function riskTypeLabel(riskType: string): string {
     subtier_visibility: "Sub-tier visibility",
     concentration_risk: "Concentration risk",
     lead_time_volatility: "Lead-time volatility",
+    capacity_bottleneck: "Capacity bottleneck",
   };
   return labels[riskType] || riskType.replace("_", " ");
 }
@@ -478,8 +479,9 @@ function SupplierRiskPanel() {
         </Badge>
       </div>
       <p className="mb-4 text-xs leading-relaxed text-slate-500">
-        Tracks tariff, concentration, sub-tier visibility, and regional fallback
-        playbooks before risks cascade into shortages or margin surprises.
+        Tracks tariff, concentration, sub-tier visibility, capacity bottlenecks,
+        and regional fallback playbooks before risks cascade into shortages or
+        margin surprises.
       </p>
       <div className="space-y-3">
         {[...demoSupplierRiskExposures]

@@ -149,7 +149,7 @@ describe("Supply Chain AI -- demo data integrity", () => {
     expect(riskTypes.has("concentration_risk")).toBe(true);
   });
 
-  it("covers all four SupplierRiskType values with at least one demo risk record each", () => {
+  it("covers all five SupplierRiskType values with at least one demo risk record each", () => {
     const riskTypes = new Set(
       demoSupplierRiskExposures.map((risk) => risk.riskType)
     );
@@ -157,7 +157,8 @@ describe("Supply Chain AI -- demo data integrity", () => {
     expect(riskTypes.has("subtier_visibility")).toBe(true);
     expect(riskTypes.has("concentration_risk")).toBe(true);
     expect(riskTypes.has("lead_time_volatility")).toBe(true);
-    expect(riskTypes.size).toBe(4);
+    expect(riskTypes.has("capacity_bottleneck")).toBe(true);
+    expect(riskTypes.size).toBe(5);
   });
 
   it("turns supplier risks into time-bound regional reconfiguration plans", () => {
@@ -190,6 +191,23 @@ describe("Supply Chain AI -- demo data integrity", () => {
       expect(risk.probability).toBeGreaterThanOrEqual(50);
       expect(risk.mitigation.length).toBeGreaterThan(40);
       expect(new Date(risk.lastReviewed).toString()).not.toBe("Invalid Date");
+    }
+  });
+
+  it("capacity bottlenecks carry accountable recovery plans", () => {
+    const bottleneckRisks = demoSupplierRiskExposures.filter(
+      (risk) => risk.riskType === "capacity_bottleneck"
+    );
+
+    expect(bottleneckRisks.length).toBeGreaterThanOrEqual(1);
+    for (const risk of bottleneckRisks) {
+      expect(["tier_2", "tier_3"]).toContain(risk.tier);
+      expect(["high", "critical"]).toContain(risk.severity);
+      expect(risk.responseWindowDays).toBeLessThanOrEqual(5);
+      expect(risk.regionalFallback.toLowerCase()).toMatch(
+        /capacity|allocation|partner|source/
+      );
+      expect(risk.decisionOwner).toContain(",");
     }
   });
 
