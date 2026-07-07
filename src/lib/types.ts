@@ -126,6 +126,9 @@ export interface PurchaseOrder {
   supplierId: string;
   quantity: number;
   unitPrice: number;
+  countryOfOrigin: string;
+  tariffRatePercent: number;
+  estimatedTariffExposure: number;
   status: OrderStatus;
   orderDate: string;
   expectedDeliveryDate: string;

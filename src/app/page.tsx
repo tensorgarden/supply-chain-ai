@@ -825,6 +825,21 @@ function customsClearanceNote(po: PurchaseOrder): string {
     : "Customs documentation packet is ready";
 }
 
+function tariffExposureLabel(po: PurchaseOrder): string {
+  if (po.tariffRatePercent === 0) {
+    return `${po.countryOfOrigin} · no tariff exposure`;
+  }
+
+  const exposure = po.estimatedTariffExposure.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  return `${po.countryOfOrigin} · ${po.tariffRatePercent.toFixed(1)}% est. duty · ${exposure} exposure`;
+}
+
 function RecentOrdersPanel() {
   const sorted = [...demoPurchaseOrders].sort(
     (a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
@@ -839,8 +854,8 @@ function RecentOrdersPanel() {
         </Badge>
       </div>
       <p className="mb-4 text-xs leading-relaxed text-slate-500">
-        Purchase order lifecycle across suppliers. Delayed orders surface
-        before they become stockout events.
+        Purchase order lifecycle with customs, country-of-origin, and tariff
+        exposure warnings before delays become stockout or margin events.
       </p>
       <div className="space-y-2">
         {sorted.map((po) => {
@@ -885,6 +900,12 @@ function RecentOrdersPanel() {
               <div className="mt-2 text-xs leading-relaxed text-slate-500">
                 <span className="font-semibold text-slate-700">Customs:</span>{" "}
                 {customsClearanceNote(po)}
+              </div>
+              <div className="mt-1 text-xs leading-relaxed text-slate-500">
+                <span className="font-semibold text-slate-700">
+                  Tariff exposure:
+                </span>{" "}
+                {tariffExposureLabel(po)}
               </div>
             </div>
           );

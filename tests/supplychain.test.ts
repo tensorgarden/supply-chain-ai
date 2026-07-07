@@ -303,6 +303,42 @@ describe("Supply Chain AI -- demo data integrity", () => {
       }
     });
 
+    it("quantifies tariff exposure for trade-policy and customs review", () => {
+      const reviewStatuses = new Set(["broker_review", "customs_hold"]);
+      const domesticOrders = demoPurchaseOrders.filter(
+        (po) => po.customsClearanceStatus === "domestic"
+      );
+      const reviewOrders = demoPurchaseOrders.filter((po) =>
+        reviewStatuses.has(po.customsClearanceStatus)
+      );
+
+      expect(domesticOrders.length).toBeGreaterThanOrEqual(1);
+      expect(reviewOrders.length).toBeGreaterThanOrEqual(2);
+
+      for (const po of demoPurchaseOrders) {
+        expect(po.countryOfOrigin.length).toBeGreaterThan(2);
+        expect(po.tariffRatePercent).toBeGreaterThanOrEqual(0);
+        expect(po.tariffRatePercent).toBeLessThanOrEqual(50);
+        expect(po.estimatedTariffExposure).toBeGreaterThanOrEqual(0);
+        const expectedExposure =
+          (po.quantity * po.unitPrice * po.tariffRatePercent) / 100;
+        expect(po.estimatedTariffExposure).toBeCloseTo(expectedExposure, 2);
+      }
+
+      for (const po of domesticOrders) {
+        expect(po.tariffRatePercent).toBe(0);
+        expect(po.estimatedTariffExposure).toBe(0);
+      }
+
+      for (const po of reviewOrders) {
+        expect(po.countryOfOrigin).not.toBe("United States");
+        expect(po.estimatedTariffExposure).toBeGreaterThan(1000);
+        expect(po.customsDelayReason?.toLowerCase()).toMatch(
+          /origin|duty|certificate|tariff/
+        );
+      }
+    });
+
     it("flags disrupted orders with carrier updates and mitigation actions", () => {
       const disruptedOrders = demoPurchaseOrders.filter((po) =>
         ["at_risk", "delayed"].includes(po.delayRisk)
