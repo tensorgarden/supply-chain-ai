@@ -149,7 +149,7 @@ describe("Supply Chain AI -- demo data integrity", () => {
     expect(riskTypes.has("concentration_risk")).toBe(true);
   });
 
-  it("covers all five SupplierRiskType values with at least one demo risk record each", () => {
+  it("covers all six SupplierRiskType values with at least one demo risk record each", () => {
     const riskTypes = new Set(
       demoSupplierRiskExposures.map((risk) => risk.riskType)
     );
@@ -158,7 +158,8 @@ describe("Supply Chain AI -- demo data integrity", () => {
     expect(riskTypes.has("concentration_risk")).toBe(true);
     expect(riskTypes.has("lead_time_volatility")).toBe(true);
     expect(riskTypes.has("capacity_bottleneck")).toBe(true);
-    expect(riskTypes.size).toBe(5);
+    expect(riskTypes.has("financial_distress")).toBe(true);
+    expect(riskTypes.size).toBe(6);
   });
 
   it("turns supplier risks into time-bound regional reconfiguration plans", () => {
@@ -208,6 +209,41 @@ describe("Supply Chain AI -- demo data integrity", () => {
         /capacity|allocation|partner|source/
       );
       expect(risk.decisionOwner).toContain(",");
+    }
+  });
+
+  it("escalates converging supplier financial-distress signals quickly", () => {
+    const financialRisks = demoSupplierRiskExposures.filter(
+      (risk) => risk.riskType === "financial_distress"
+    );
+
+    expect(financialRisks.length).toBeGreaterThanOrEqual(1);
+    for (const risk of financialRisks) {
+      const supplier = demoSuppliers.find((item) => item.id === risk.supplierId);
+      const evidence = `${risk.impact} ${risk.mitigation}`.toLowerCase();
+
+      expect(supplier?.status).toBe("under_review");
+      expect(["high", "critical"]).toContain(risk.severity);
+      expect(risk.responseWindowDays).toBeLessThanOrEqual(5);
+      expect(evidence).toMatch(/credit|liquidity|payment/);
+      expect(new Date(risk.lastReviewed).toString()).not.toBe("Invalid Date");
+    }
+  });
+
+  it("pairs financial-distress alerts with owned continuity actions", () => {
+    const financialRisks = demoSupplierRiskExposures.filter(
+      (risk) => risk.riskType === "financial_distress"
+    );
+
+    for (const risk of financialRisks) {
+      expect(risk.regionalFallback.length).toBeGreaterThan(80);
+      expect(risk.regionalFallback.toLowerCase()).toMatch(
+        /backup|alternate|partner|source/
+      );
+      expect(risk.decisionOwner).toContain(",");
+      expect(risk.mitigation.toLowerCase()).toMatch(
+        /exposure|tooling|alternate|continuity/
+      );
     }
   });
 

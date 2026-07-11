@@ -173,6 +173,22 @@ export const demoSupplierRiskExposures: SupplierRiskExposure[] = [
     mitigation: "Approve dual-source allocation, pull in two weeks of buffer stock, and run daily available-to-promise checks until the constrained capacity release is confirmed.",
     lastReviewed: "2026-07-03",
   },
+  {
+    id: "risk_006",
+    supplierId: "sup_006",
+    productId: "prd_007",
+    riskType: "financial_distress",
+    severity: "high",
+    region: "Mexico plastics and tooling corridor",
+    tier: "tier_1",
+    probability: 76,
+    responseWindowDays: 3,
+    regionalFallback: "Release the approved backup mold to the Monterrey partner and reserve resin allocation before PolyForm misses the next housing production window.",
+    decisionOwner: "Avery Singh, supplier continuity manager",
+    impact: "PolyForm requested accelerated payment terms after a credit downgrade while delivery and quality scores declined, indicating converging liquidity stress before a possible supply interruption.",
+    mitigation: "Escalate a weekly liquidity and payment-term review, cap new exposure, secure tooling access, and stage the approved alternate source before the next production release.",
+    lastReviewed: "2026-07-10",
+  },
 ];
 
 export const demoPurchaseOrders: PurchaseOrder[] = [

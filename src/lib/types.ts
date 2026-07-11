@@ -16,7 +16,8 @@ export type SupplierRiskType =
   | "subtier_visibility"
   | "concentration_risk"
   | "lead_time_volatility"
-  | "capacity_bottleneck";
+  | "capacity_bottleneck"
+  | "financial_distress";
 
 export type SupplierRiskSeverity = "low" | "medium" | "high" | "critical";
 
