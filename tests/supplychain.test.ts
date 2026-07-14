@@ -7,6 +7,7 @@ import {
   demoDemandForecasts,
   demoSupplierRiskExposures,
   demoPurchaseOrders,
+  demoSupplierCorrectiveActions,
   demoMetrics,
 } from "@/lib/demo-data";
 
@@ -76,6 +77,46 @@ describe("Supply Chain AI -- demo data integrity", () => {
       expect(qc.defectRate).toBeGreaterThanOrEqual(0);
       expect(qc.defectRate).toBeLessThanOrEqual(100);
     }
+  });
+
+  describe("supplier quality corrective actions", () => {
+    it("links every action to a non-passing inspection for the same supplier", () => {
+      for (const action of demoSupplierCorrectiveActions) {
+        const check = demoQualityChecks.find(
+          (item) => item.id === action.qualityCheckId
+        );
+
+        expect(check, `Missing quality check for ${action.id}`).toBeDefined();
+        expect(check?.supplierId).toBe(action.supplierId);
+        expect(check?.result).not.toBe("pass");
+      }
+    });
+
+    it("keeps unresolved actions owned, time-bound, and under containment", () => {
+      const unresolved = demoSupplierCorrectiveActions.filter(
+        (action) => action.status !== "closed"
+      );
+
+      expect(unresolved.length).toBeGreaterThanOrEqual(2);
+      for (const action of unresolved) {
+        expect(action.owner).toContain(",");
+        expect(new Date(action.dueDate).toString()).not.toBe("Invalid Date");
+        expect(action.containmentAction.length).toBeGreaterThan(60);
+        expect(action.rootCause.length).toBeGreaterThan(40);
+        expect(action.verificationEvidence).toBeNull();
+      }
+    });
+
+    it("requires objective verification evidence before closure", () => {
+      const closed = demoSupplierCorrectiveActions.filter(
+        (action) => action.status === "closed"
+      );
+
+      expect(closed.length).toBeGreaterThanOrEqual(1);
+      for (const action of closed) {
+        expect(action.verificationEvidence?.length ?? 0).toBeGreaterThan(60);
+      }
+    });
   });
 
   it("forecast confidence ranges are sensible", () => {

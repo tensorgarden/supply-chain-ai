@@ -6,6 +6,7 @@ import {
   demoDemandForecasts,
   demoSupplierRiskExposures,
   demoPurchaseOrders,
+  demoSupplierCorrectiveActions,
   demoMetrics,
 } from "@/lib/demo-data";
 import type {
@@ -16,6 +17,7 @@ import type {
   DemandForecast,
   SupplierRiskExposure,
   PurchaseOrder,
+  SupplierCorrectiveAction,
 } from "@/lib/types";
 
 // --- Reusable components ---
@@ -538,6 +540,64 @@ function QualityCheckRow({ check }: { check: QualityCheck }) {
   );
 }
 
+function correctiveActionTone(
+  status: SupplierCorrectiveAction["status"]
+): "green" | "amber" | "red" {
+  if (status === "closed") return "green";
+  if (status === "verification_pending") return "amber";
+  return "red";
+}
+
+function CorrectiveActionQueue() {
+  const unresolved = demoSupplierCorrectiveActions.filter(
+    (action) => action.status !== "closed"
+  );
+
+  return (
+    <div className="mt-5 border-t border-slate-100 pt-4">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-bold text-slate-900">
+          Corrective Action Queue
+        </h3>
+        <Badge tone={unresolved.length > 0 ? "red" : "green"}>
+          {unresolved.length} open
+        </Badge>
+      </div>
+      <div className="space-y-2">
+        {demoSupplierCorrectiveActions.map((action) => {
+          const check = demoQualityChecks.find(
+            (item) => item.id === action.qualityCheckId
+          );
+          const supplier = findSupplier(action.supplierId);
+
+          return (
+            <div
+              key={action.id}
+              className="rounded-xl border border-slate-100 bg-slate-50/60 p-3"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-semibold text-slate-900">
+                  {supplier?.name || action.supplierId}
+                </span>
+                <Badge tone={correctiveActionTone(action.status)}>
+                  {action.status.replaceAll("_", " ")}
+                </Badge>
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                <span className="font-semibold text-slate-700">Containment:</span>{" "}
+                {action.containmentAction}
+              </p>
+              <div className="mt-2 text-[11px] uppercase tracking-wide text-slate-400">
+                {check?.batchNumber || action.qualityCheckId} · Due {action.dueDate} · {action.owner}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function QualityControlPanel() {
   const passCount = demoQualityChecks.filter((q) => q.result === "pass").length;
   const failCount = demoQualityChecks.filter((q) => q.result === "fail").length;
@@ -591,6 +651,7 @@ function QualityControlPanel() {
           </tbody>
         </table>
       </div>
+      <CorrectiveActionQueue />
     </Card>
   );
 }

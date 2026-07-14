@@ -71,6 +71,23 @@ export interface QualityCheck {
   notes: string;
 }
 
+export type CorrectiveActionStatus =
+  | "supplier_response_due"
+  | "verification_pending"
+  | "closed";
+
+export interface SupplierCorrectiveAction {
+  id: string;
+  qualityCheckId: string;
+  supplierId: string;
+  status: CorrectiveActionStatus;
+  owner: string;
+  dueDate: string;
+  containmentAction: string;
+  rootCause: string;
+  verificationEvidence: string | null;
+}
+
 export interface DemandForecast {
   id: string;
   productId: string;

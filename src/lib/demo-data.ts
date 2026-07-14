@@ -7,6 +7,7 @@ import type {
   SupplierRiskExposure,
   PurchaseOrder,
   SupplyChainMetrics,
+  SupplierCorrectiveAction,
 } from "./types";
 
 export const demoProducts: Product[] = [
@@ -69,6 +70,42 @@ export const demoQualityChecks: QualityCheck[] = [
   { id: "qc_010", productId: "prd_003", supplierId: "sup_003", batchNumber: "COP-12-B2200", inspectionDate: "2026-05-28", result: "pass", defectRate: 0.02, inspectorName: "James Okonkwo", notes: "Conductivity and gauge verified. Spool winding consistent." },
   { id: "qc_011", productId: "prd_011", supplierId: "sup_008", batchNumber: "BOX-CORR-B980", inspectionDate: "2026-05-26", result: "pass", defectRate: 0.50, inspectorName: "Elena Torres", notes: "Burst strength testing passed. Print alignment acceptable." },
   { id: "qc_012", productId: "prd_014", supplierId: "sup_003", batchNumber: "TP-SYR-B445", inspectionDate: "2026-05-25", result: "pass", defectRate: 0.10, inspectorName: "Maria Chen", notes: "Thermal conductivity verified. No leakage in packaging." },
+];
+
+export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
+  {
+    id: "sca_001",
+    qualityCheckId: "qc_005",
+    supplierId: "sup_002",
+    status: "supplier_response_due",
+    owner: "David Park, supplier quality engineer",
+    dueDate: "2026-07-16",
+    containmentAction: "Quarantine the rejected steel batch and shift the next control-panel allocation to the approved backup mill.",
+    rootCause: "Mill heat-treatment parameter drift is under joint 5-Why review with SteelWorks.",
+    verificationEvidence: null,
+  },
+  {
+    id: "sca_002",
+    qualityCheckId: "qc_003",
+    supplierId: "sup_006",
+    status: "verification_pending",
+    owner: "Maria Chen, incoming quality lead",
+    dueDate: "2026-07-18",
+    containmentAction: "Segregate flash-affected housings and require first-article approval before the next molding release.",
+    rootCause: "Mold clamp-pressure drift was traced to an overdue preventive-maintenance interval.",
+    verificationEvidence: null,
+  },
+  {
+    id: "sca_003",
+    qualityCheckId: "qc_008",
+    supplierId: "sup_002",
+    status: "closed",
+    owner: "Elena Torres, packaging quality owner",
+    dueDate: "2026-06-20",
+    containmentAction: "Repack scratched panels with corner protection and inspect the remaining shipment before line release.",
+    rootCause: "Insufficient corner protection allowed panel movement during pallet transport.",
+    verificationEvidence: "Supplier drop-test report and receiving photos confirmed the revised packaging prevented repeat damage.",
+  },
 ];
 
 export const demoDemandForecasts: DemandForecast[] = [
