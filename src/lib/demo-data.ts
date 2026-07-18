@@ -82,6 +82,9 @@ export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
     dueDate: "2026-07-16",
     containmentAction: "Quarantine the rejected steel batch and shift the next control-panel allocation to the approved backup mill.",
     rootCause: "Mill heat-treatment parameter drift is under joint 5-Why review with SteelWorks.",
+    effectivenessReviewDate: "2026-08-07",
+    effectivenessCriteria: "Three consecutive steel heats must meet tensile-strength specification with zero repeat nonconformances.",
+    effectivenessStatus: "scheduled",
     verificationEvidence: null,
   },
   {
@@ -93,6 +96,9 @@ export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
     dueDate: "2026-07-18",
     containmentAction: "Segregate flash-affected housings and require first-article approval before the next molding release.",
     rootCause: "Mold clamp-pressure drift was traced to an overdue preventive-maintenance interval.",
+    effectivenessReviewDate: "2026-08-01",
+    effectivenessCriteria: "Two consecutive first-article inspections must keep flash defects below 1.0% after clamp maintenance.",
+    effectivenessStatus: "scheduled",
     verificationEvidence: null,
   },
   {
@@ -104,7 +110,10 @@ export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
     dueDate: "2026-06-20",
     containmentAction: "Repack scratched panels with corner protection and inspect the remaining shipment before line release.",
     rootCause: "Insufficient corner protection allowed panel movement during pallet transport.",
-    verificationEvidence: "Supplier drop-test report and receiving photos confirmed the revised packaging prevented repeat damage.",
+    effectivenessReviewDate: "2026-07-04",
+    effectivenessCriteria: "Three consecutive receiving lots must show zero corner-damage defects after the packaging redesign.",
+    effectivenessStatus: "effective",
+    verificationEvidence: "Three consecutive receiving-lot inspections, the supplier drop-test report, and receiving photos recorded zero repeat corner damage after the packaging redesign.",
   },
 ];
 

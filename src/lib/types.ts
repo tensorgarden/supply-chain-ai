@@ -76,6 +76,11 @@ export type CorrectiveActionStatus =
   | "verification_pending"
   | "closed";
 
+export type CorrectiveActionEffectiveness =
+  | "scheduled"
+  | "effective"
+  | "ineffective";
+
 export interface SupplierCorrectiveAction {
   id: string;
   qualityCheckId: string;
@@ -85,6 +90,9 @@ export interface SupplierCorrectiveAction {
   dueDate: string;
   containmentAction: string;
   rootCause: string;
+  effectivenessReviewDate: string;
+  effectivenessCriteria: string;
+  effectivenessStatus: CorrectiveActionEffectiveness;
   verificationEvidence: string | null;
 }
 

@@ -103,6 +103,7 @@ describe("Supply Chain AI -- demo data integrity", () => {
         expect(new Date(action.dueDate).toString()).not.toBe("Invalid Date");
         expect(action.containmentAction.length).toBeGreaterThan(60);
         expect(action.rootCause.length).toBeGreaterThan(40);
+        expect(action.effectivenessStatus).toBe("scheduled");
         expect(action.verificationEvidence).toBeNull();
       }
     });
@@ -114,7 +115,22 @@ describe("Supply Chain AI -- demo data integrity", () => {
 
       expect(closed.length).toBeGreaterThanOrEqual(1);
       for (const action of closed) {
+        expect(action.effectivenessStatus).toBe("effective");
         expect(action.verificationEvidence?.length ?? 0).toBeGreaterThan(60);
+      }
+    });
+
+    it("defines measurable effectiveness criteria before CAPA closure", () => {
+      for (const action of demoSupplierCorrectiveActions) {
+        const reviewDate = new Date(action.effectivenessReviewDate);
+        const dueDate = new Date(action.dueDate);
+
+        expect(reviewDate.toString()).not.toBe("Invalid Date");
+        expect(reviewDate.getTime()).toBeGreaterThan(dueDate.getTime());
+        expect(action.effectivenessCriteria.length).toBeGreaterThan(75);
+        expect(action.effectivenessCriteria.toLowerCase()).toMatch(
+          /zero|two|three|%/
+        );
       }
     });
   });

@@ -587,6 +587,14 @@ function CorrectiveActionQueue() {
                 <span className="font-semibold text-slate-700">Containment:</span>{" "}
                 {action.containmentAction}
               </p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                <span className="font-semibold text-slate-700">Effectiveness:</span>{" "}
+                {action.effectivenessStatus} · Review{" "}
+                <time dateTime={action.effectivenessReviewDate}>
+                  {action.effectivenessReviewDate}
+                </time>{" "}
+                · {action.effectivenessCriteria}
+              </p>
               <div className="mt-2 text-[11px] uppercase tracking-wide text-slate-400">
                 {check?.batchNumber || action.qualityCheckId} · Due {action.dueDate} · {action.owner}
               </div>
