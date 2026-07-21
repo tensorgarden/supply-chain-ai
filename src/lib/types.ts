@@ -93,6 +93,9 @@ export interface SupplierCorrectiveAction {
   effectivenessReviewDate: string;
   effectivenessCriteria: string;
   effectivenessStatus: CorrectiveActionEffectiveness;
+  effectivenessObservationsRequired: number;
+  effectivenessObservationsCompleted: number;
+  repeatDefectsObserved: number;
   verificationEvidence: string | null;
 }
 

@@ -594,6 +594,10 @@ function CorrectiveActionQueue() {
                   {action.effectivenessReviewDate}
                 </time>{" "}
                 · {action.effectivenessCriteria}
+                <span className="mt-1 block font-semibold text-slate-700">
+                  Observations {action.effectivenessObservationsCompleted}/
+                  {action.effectivenessObservationsRequired} · {action.repeatDefectsObserved} repeat defects
+                </span>
               </p>
               <div className="mt-2 text-[11px] uppercase tracking-wide text-slate-400">
                 {check?.batchNumber || action.qualityCheckId} · Due {action.dueDate} · {action.owner}

@@ -85,6 +85,9 @@ export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
     effectivenessReviewDate: "2026-08-07",
     effectivenessCriteria: "Three consecutive steel heats must meet tensile-strength specification with zero repeat nonconformances.",
     effectivenessStatus: "scheduled",
+    effectivenessObservationsRequired: 3,
+    effectivenessObservationsCompleted: 1,
+    repeatDefectsObserved: 0,
     verificationEvidence: null,
   },
   {
@@ -99,6 +102,9 @@ export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
     effectivenessReviewDate: "2026-08-01",
     effectivenessCriteria: "Two consecutive first-article inspections must keep flash defects below 1.0% after clamp maintenance.",
     effectivenessStatus: "scheduled",
+    effectivenessObservationsRequired: 2,
+    effectivenessObservationsCompleted: 1,
+    repeatDefectsObserved: 0,
     verificationEvidence: null,
   },
   {
@@ -113,6 +119,9 @@ export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
     effectivenessReviewDate: "2026-07-04",
     effectivenessCriteria: "Three consecutive receiving lots must show zero corner-damage defects after the packaging redesign.",
     effectivenessStatus: "effective",
+    effectivenessObservationsRequired: 3,
+    effectivenessObservationsCompleted: 3,
+    repeatDefectsObserved: 0,
     verificationEvidence: "Three consecutive receiving-lot inspections, the supplier drop-test report, and receiving photos recorded zero repeat corner damage after the packaging redesign.",
   },
 ];

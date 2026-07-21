@@ -133,6 +133,32 @@ describe("Supply Chain AI -- demo data integrity", () => {
         );
       }
     });
+
+    it("tracks observation-window progress before closure", () => {
+      for (const action of demoSupplierCorrectiveActions) {
+        expect(action.effectivenessObservationsRequired).toBeGreaterThan(0);
+        expect(action.effectivenessObservationsCompleted).toBeGreaterThanOrEqual(0);
+        expect(action.effectivenessObservationsCompleted).toBeLessThanOrEqual(
+          action.effectivenessObservationsRequired
+        );
+        expect(action.repeatDefectsObserved).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it("only closes actions after a complete recurrence-free observation window", () => {
+      for (const action of demoSupplierCorrectiveActions) {
+        if (action.status === "closed") {
+          expect(action.effectivenessObservationsCompleted).toBe(
+            action.effectivenessObservationsRequired
+          );
+          expect(action.repeatDefectsObserved).toBe(0);
+        } else {
+          expect(action.effectivenessObservationsCompleted).toBeLessThan(
+            action.effectivenessObservationsRequired
+          );
+        }
+      }
+    });
   });
 
   it("forecast confidence ranges are sensible", () => {
