@@ -81,6 +81,11 @@ export type CorrectiveActionEffectiveness =
   | "effective"
   | "ineffective";
 
+export type CorrectiveActionObservationUnit =
+  | "steel_heats"
+  | "first_article_inspections"
+  | "receiving_lots";
+
 export interface SupplierCorrectiveAction {
   id: string;
   qualityCheckId: string;
@@ -93,6 +98,7 @@ export interface SupplierCorrectiveAction {
   effectivenessReviewDate: string;
   effectivenessCriteria: string;
   effectivenessStatus: CorrectiveActionEffectiveness;
+  effectivenessObservationUnit: CorrectiveActionObservationUnit;
   effectivenessObservationsRequired: number;
   effectivenessObservationsCompleted: number;
   repeatDefectsObserved: number;

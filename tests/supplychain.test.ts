@@ -134,12 +134,29 @@ describe("Supply Chain AI -- demo data integrity", () => {
       }
     });
 
-    it("tracks observation-window progress before closure", () => {
+    it("tracks typed observation units and bounded progress before closure", () => {
+      const criteriaTerms = {
+        steel_heats: "heats",
+        first_article_inspections: "first-article inspections",
+        receiving_lots: "receiving lots",
+      } as const;
+
+      expect(
+        new Set(
+          demoSupplierCorrectiveActions.map(
+            (action) => action.effectivenessObservationUnit
+          )
+        ).size
+      ).toBe(3);
+
       for (const action of demoSupplierCorrectiveActions) {
         expect(action.effectivenessObservationsRequired).toBeGreaterThan(0);
         expect(action.effectivenessObservationsCompleted).toBeGreaterThanOrEqual(0);
         expect(action.effectivenessObservationsCompleted).toBeLessThanOrEqual(
           action.effectivenessObservationsRequired
+        );
+        expect(action.effectivenessCriteria.toLowerCase()).toContain(
+          criteriaTerms[action.effectivenessObservationUnit]
         );
         expect(action.repeatDefectsObserved).toBeGreaterThanOrEqual(0);
       }

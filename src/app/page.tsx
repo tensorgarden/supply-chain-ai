@@ -548,6 +548,21 @@ function correctiveActionTone(
   return "red";
 }
 
+function effectivenessObservationLabel(
+  unit: SupplierCorrectiveAction["effectivenessObservationUnit"]
+): string {
+  const labels: Record<
+    SupplierCorrectiveAction["effectivenessObservationUnit"],
+    string
+  > = {
+    steel_heats: "steel heats",
+    first_article_inspections: "first-article inspections",
+    receiving_lots: "receiving lots",
+  };
+
+  return labels[unit];
+}
+
 function CorrectiveActionQueue() {
   const unresolved = demoSupplierCorrectiveActions.filter(
     (action) => action.status !== "closed"
@@ -595,8 +610,12 @@ function CorrectiveActionQueue() {
                 </time>{" "}
                 · {action.effectivenessCriteria}
                 <span className="mt-1 block font-semibold text-slate-700">
-                  Observations {action.effectivenessObservationsCompleted}/
-                  {action.effectivenessObservationsRequired} · {action.repeatDefectsObserved} repeat defects
+                  {action.effectivenessObservationsCompleted}/
+                  {action.effectivenessObservationsRequired}{" "}
+                  {effectivenessObservationLabel(
+                    action.effectivenessObservationUnit
+                  )}{" "}
+                  observed · {action.repeatDefectsObserved} repeat defects
                 </span>
               </p>
               <div className="mt-2 text-[11px] uppercase tracking-wide text-slate-400">
