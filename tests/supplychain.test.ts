@@ -176,6 +176,42 @@ describe("Supply Chain AI -- demo data integrity", () => {
         }
       }
     });
+
+    it("links each inventory hold to the affected inspection batch", () => {
+      const holdStates = new Set(
+        demoSupplierCorrectiveActions.map((action) => action.inventoryHoldStatus)
+      );
+
+      expect(holdStates).toEqual(
+        new Set(["hold_active", "disposition_pending", "released"])
+      );
+      for (const action of demoSupplierCorrectiveActions) {
+        const check = demoQualityChecks.find(
+          (item) => item.id === action.qualityCheckId
+        );
+
+        expect(check).toBeDefined();
+        expect(action.affectedInventoryScope).toContain(check?.batchNumber);
+      }
+    });
+
+    it("requires disposition evidence before held inventory is released", () => {
+      const unreleased = demoSupplierCorrectiveActions.filter(
+        (action) => action.inventoryHoldStatus !== "released"
+      );
+      const released = demoSupplierCorrectiveActions.filter(
+        (action) => action.inventoryHoldStatus === "released"
+      );
+
+      expect(unreleased.length).toBeGreaterThanOrEqual(2);
+      expect(released.length).toBeGreaterThanOrEqual(1);
+      for (const action of unreleased) {
+        expect(action.inventoryReleaseEvidence).toBeNull();
+      }
+      for (const action of released) {
+        expect(action.inventoryReleaseEvidence?.length ?? 0).toBeGreaterThan(80);
+      }
+    });
   });
 
   it("forecast confidence ranges are sensible", () => {

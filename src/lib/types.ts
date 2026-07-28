@@ -86,6 +86,11 @@ export type CorrectiveActionObservationUnit =
   | "first_article_inspections"
   | "receiving_lots";
 
+export type CorrectiveActionInventoryHoldStatus =
+  | "hold_active"
+  | "disposition_pending"
+  | "released";
+
 export interface SupplierCorrectiveAction {
   id: string;
   qualityCheckId: string;
@@ -94,6 +99,9 @@ export interface SupplierCorrectiveAction {
   owner: string;
   dueDate: string;
   containmentAction: string;
+  affectedInventoryScope: string;
+  inventoryHoldStatus: CorrectiveActionInventoryHoldStatus;
+  inventoryReleaseEvidence: string | null;
   rootCause: string;
   effectivenessReviewDate: string;
   effectivenessCriteria: string;

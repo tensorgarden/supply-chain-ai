@@ -563,6 +563,21 @@ function effectivenessObservationLabel(
   return labels[unit];
 }
 
+function inventoryHoldLabel(
+  status: SupplierCorrectiveAction["inventoryHoldStatus"]
+): string {
+  const labels: Record<
+    SupplierCorrectiveAction["inventoryHoldStatus"],
+    string
+  > = {
+    hold_active: "hold active",
+    disposition_pending: "disposition pending",
+    released: "released",
+  };
+
+  return labels[status];
+}
+
 function CorrectiveActionQueue() {
   const unresolved = demoSupplierCorrectiveActions.filter(
     (action) => action.status !== "closed"
@@ -601,6 +616,16 @@ function CorrectiveActionQueue() {
               <p className="mt-1 text-xs leading-relaxed text-slate-600">
                 <span className="font-semibold text-slate-700">Containment:</span>{" "}
                 {action.containmentAction}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                <span className="font-semibold text-slate-700">Inventory gate:</span>{" "}
+                {inventoryHoldLabel(action.inventoryHoldStatus)} ·{" "}
+                {action.affectedInventoryScope}
+                {action.inventoryReleaseEvidence && (
+                  <span className="mt-1 block text-slate-500">
+                    Release evidence: {action.inventoryReleaseEvidence}
+                  </span>
+                )}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-slate-600">
                 <span className="font-semibold text-slate-700">Effectiveness:</span>{" "}
