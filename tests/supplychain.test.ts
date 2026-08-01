@@ -212,6 +212,26 @@ describe("Supply Chain AI -- demo data integrity", () => {
         expect(action.inventoryReleaseEvidence?.length ?? 0).toBeGreaterThan(80);
       }
     });
+
+    it("blocks WMS picking until held inventory is released", () => {
+      const blocked = demoSupplierCorrectiveActions.filter(
+        (action) => action.inventoryPickStatus === "blocked"
+      );
+      const cleared = demoSupplierCorrectiveActions.filter(
+        (action) => action.inventoryPickStatus === "cleared"
+      );
+
+      expect(blocked.length).toBeGreaterThanOrEqual(2);
+      expect(cleared.length).toBeGreaterThanOrEqual(1);
+      for (const action of demoSupplierCorrectiveActions) {
+        expect(action.inventoryHoldLocation.length).toBeGreaterThan(20);
+        if (action.inventoryHoldStatus === "released") {
+          expect(action.inventoryPickStatus).toBe("cleared");
+        } else {
+          expect(action.inventoryPickStatus).toBe("blocked");
+        }
+      }
+    });
   });
 
   it("forecast confidence ranges are sensible", () => {

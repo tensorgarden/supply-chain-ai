@@ -91,6 +91,8 @@ export type CorrectiveActionInventoryHoldStatus =
   | "disposition_pending"
   | "released";
 
+export type CorrectiveActionInventoryPickStatus = "blocked" | "cleared";
+
 export interface SupplierCorrectiveAction {
   id: string;
   qualityCheckId: string;
@@ -101,6 +103,8 @@ export interface SupplierCorrectiveAction {
   containmentAction: string;
   affectedInventoryScope: string;
   inventoryHoldStatus: CorrectiveActionInventoryHoldStatus;
+  inventoryHoldLocation: string;
+  inventoryPickStatus: CorrectiveActionInventoryPickStatus;
   inventoryReleaseEvidence: string | null;
   rootCause: string;
   effectivenessReviewDate: string;

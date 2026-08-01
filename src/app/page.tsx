@@ -578,6 +578,12 @@ function inventoryHoldLabel(
   return labels[status];
 }
 
+function inventoryPickLabel(
+  status: SupplierCorrectiveAction["inventoryPickStatus"]
+): string {
+  return status === "blocked" ? "picking blocked" : "picking cleared";
+}
+
 function CorrectiveActionQueue() {
   const unresolved = demoSupplierCorrectiveActions.filter(
     (action) => action.status !== "closed"
@@ -620,7 +626,11 @@ function CorrectiveActionQueue() {
               <p className="mt-1 text-xs leading-relaxed text-slate-600">
                 <span className="font-semibold text-slate-700">Inventory gate:</span>{" "}
                 {inventoryHoldLabel(action.inventoryHoldStatus)} ·{" "}
-                {action.affectedInventoryScope}
+                {inventoryPickLabel(action.inventoryPickStatus)} ·{" "}
+                {action.inventoryHoldLocation}
+                <span className="mt-1 block text-slate-500">
+                  Scope: {action.affectedInventoryScope}
+                </span>
                 {action.inventoryReleaseEvidence && (
                   <span className="mt-1 block text-slate-500">
                     Release evidence: {action.inventoryReleaseEvidence}
