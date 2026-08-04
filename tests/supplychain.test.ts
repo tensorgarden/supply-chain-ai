@@ -234,6 +234,62 @@ describe("Supply Chain AI -- demo data integrity", () => {
     });
   });
 
+  describe("certificate of analysis verification", () => {
+    it("covers verified, mismatch, and pending certificate states", () => {
+      const statuses = new Set(demoQualityChecks.map((qc) => qc.coaStatus));
+      expect(statuses.has("verified")).toBe(true);
+      expect(statuses.has("mismatch")).toBe(true);
+      expect(statuses.has("pending")).toBe(true);
+    });
+
+    it("verified certificates carry measurable supplier claims and no discrepancy", () => {
+      const verified = demoQualityChecks.filter(
+        (qc) => qc.coaStatus === "verified"
+      );
+      expect(verified.length).toBeGreaterThanOrEqual(3);
+      for (const qc of verified) {
+        expect(qc.coaClaimedSpec?.length ?? 0).toBeGreaterThan(40);
+        expect(qc.coaClaimedSpec).toMatch(/\d/);
+        expect(qc.coaDiscrepancyNote).toBeNull();
+      }
+    });
+
+    it("mismatched certificates cannot back a passing inspection", () => {
+      const mismatches = demoQualityChecks.filter(
+        (qc) => qc.coaStatus === "mismatch"
+      );
+      expect(mismatches.length).toBeGreaterThanOrEqual(1);
+      for (const qc of mismatches) {
+        expect(qc.result).not.toBe("pass");
+        expect(qc.coaDiscrepancyNote?.length ?? 0).toBeGreaterThan(80);
+        expect(qc.coaDiscrepancyNote?.toLowerCase()).toMatch(
+          /measured|contradict|below|exceed/
+        );
+      }
+    });
+
+    it("pending certificates carry no supplier claims and stay visible", () => {
+      const pending = demoQualityChecks.filter(
+        (qc) => qc.coaStatus === "pending"
+      );
+      expect(pending.length).toBeGreaterThanOrEqual(1);
+      for (const qc of pending) {
+        expect(qc.coaClaimedSpec).toBeNull();
+        expect(qc.coaDiscrepancyNote).toBeNull();
+      }
+    });
+
+    it("ties certificate mismatches to corrective-action follow-through", () => {
+      const mismatches = demoQualityChecks.filter(
+        (qc) => qc.coaStatus === "mismatch"
+      );
+      const linked = demoSupplierCorrectiveActions.filter((action) =>
+        mismatches.some((qc) => qc.id === action.qualityCheckId)
+      );
+      expect(linked.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
   it("forecast confidence ranges are sensible", () => {
     for (const f of demoDemandForecasts) {
       expect(f.confidenceLower).toBeLessThan(f.forecastedDemand);

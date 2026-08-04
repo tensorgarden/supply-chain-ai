@@ -9,6 +9,8 @@ export type SupplierStatus = "active" | "under_review" | "suspended";
 
 export type QualityResult = "pass" | "fail" | "conditional_pass";
 
+export type CoAVerificationStatus = "verified" | "mismatch" | "pending";
+
 export type DemandTrend = "up" | "down" | "stable";
 
 export type SupplierRiskType =
@@ -68,6 +70,9 @@ export interface QualityCheck {
   result: QualityResult;
   defectRate: number;
   inspectorName: string;
+  coaStatus: CoAVerificationStatus;
+  coaClaimedSpec: string | null;
+  coaDiscrepancyNote: string | null;
   notes: string;
 }
 

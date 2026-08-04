@@ -176,6 +176,21 @@ function qualityResultTone(
   return "slate";
 }
 
+function coaStatusLabel(status: QualityCheck["coaStatus"]): string {
+  const labels: Record<QualityCheck["coaStatus"], string> = {
+    verified: "CoA verified",
+    mismatch: "CoA mismatch",
+    pending: "CoA pending",
+  };
+  return labels[status];
+}
+
+function coaTone(status: QualityCheck["coaStatus"]): "green" | "red" | "amber" {
+  if (status === "verified") return "green";
+  if (status === "mismatch") return "red";
+  return "amber";
+}
+
 function trendIcon(trend: string): string {
   if (trend === "up") return "\u2191";
   if (trend === "down") return "\u2193";
@@ -514,9 +529,19 @@ function QualityCheckRow({ check }: { check: QualityCheck }) {
         </div>
       </td>
       <td className="py-3 px-4">
-        <Badge tone={qualityResultTone(check.result)}>
-          {qualityResultLabel(check.result)}
-        </Badge>
+        <div className="flex flex-col gap-1">
+          <Badge tone={qualityResultTone(check.result)}>
+            {qualityResultLabel(check.result)}
+          </Badge>
+          <Badge tone={coaTone(check.coaStatus)}>
+            {coaStatusLabel(check.coaStatus)}
+          </Badge>
+        </div>
+        {check.coaStatus === "mismatch" && check.coaDiscrepancyNote && (
+          <p className="mt-1 max-w-[220px] text-[11px] leading-snug text-red-600">
+            {check.coaDiscrepancyNote}
+          </p>
+        )}
       </td>
       <td className="py-3 px-4 text-sm text-slate-700">
         {product?.name || check.productId}
