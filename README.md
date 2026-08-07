@@ -2,6 +2,18 @@
 
 **Demand forecasting, quality control monitoring, inventory optimization, and supplier performance analytics** -- an AI-powered supply chain operations console for manufacturing.
 
+## Screenshots
+
+| Screenshot | Caption |
+|---|---|
+| ![Inventory health with stock levels and reorder alerts](docs/screenshots/01-inventory-health.png) | Inventory health with stock levels and reorder alerts |
+| ![Supplier performance scorecards and delivery metrics](docs/screenshots/02-supplier-performance.png) | Supplier performance scorecards and delivery metrics |
+| ![Demand forecasts with confidence and trend signals](docs/screenshots/03-demand-forecast.png) | Demand forecasts with confidence and trend signals |
+| ![Low-stock alerts prioritized by days to stockout](docs/screenshots/04-low-stock-alerts.png) | Low-stock alerts prioritized by days to stockout |
+| ![Supplier risk watch with exposure and mitigation status](docs/screenshots/05-supplier-risk-watch.png) | Supplier risk watch with exposure and mitigation status |
+| ![Quality control checks and certificate verification](docs/screenshots/06-quality-control.png) | Quality control checks and certificate verification |
+| ![Full-page portfolio demo screenshot](docs/screenshots/00-full-page.png) | Full-page portfolio demo screenshot |
+
 ## The Problem
 
 Manufacturing supply chains operate with critical blind spots. Demand forecasts live in one spreadsheet, quality inspection results in another, inventory levels in an ERP that updates once daily, and supplier scorecards in someone's email inbox. When a critical component dips below reorder point, the team discovers it when the production line stops -- not when the trend first emerged.
