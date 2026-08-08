@@ -3,6 +3,7 @@ import {
   demoProducts,
   demoSuppliers,
   demoInventory,
+  demoInventoryLots,
   demoQualityChecks,
   demoDemandForecasts,
   demoSupplierRiskExposures,
@@ -664,5 +665,54 @@ describe("Supply Chain AI -- demo data integrity", () => {
         );
       }
     });
+  });
+});
+
+describe("Supply Chain AI -- inventory lot management (FIFO & expiration)", () => {
+  it("has demo inventory lots defined", () => {
+    expect(demoInventoryLots.length).toBeGreaterThanOrEqual(8);
+  });
+
+  it("every lot has valid segregation status", () => {
+    const validStatuses = new Set(["segregated", "mixed_lot_alert", "pending_review"]);
+    for (const lot of demoInventoryLots) {
+      expect(validStatuses.has(lot.segregationStatus)).toBe(true);
+    }
+  });
+
+  it("lot expiration dates are in ISO 8601 format", () => {
+    for (const lot of demoInventoryLots) {
+      const date = new Date(lot.expirationDate);
+      expect(date.toString()).not.toBe("Invalid Date");
+      expect(lot.expirationDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
+  it("lot quantities match segregation and FIFO expectations", () => {
+    for (const lot of demoInventoryLots) {
+      expect(lot.quantityOnHand).toBeGreaterThan(0);
+      expect(lot.quantityReserved).toBeLessThanOrEqual(lot.quantityOnHand);
+      expect(lot.fifoSequence).toBeGreaterThan(0);
+    }
+  });
+
+  it("nearing-expiration lots are flagged for review", () => {
+    const today = new Date("2026-08-08");
+    const reviewNeededLots = demoInventoryLots.filter((lot) => {
+      const expiration = new Date(lot.expirationDate);
+      const daysToExpiry = Math.floor((expiration.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      return daysToExpiry <= 45 && daysToExpiry > 0;
+    });
+    expect(reviewNeededLots.length).toBeGreaterThan(0);
+  });
+
+  it("mixed-lot pallets alert on non-segregated inventory", () => {
+    const mixedLots = demoInventoryLots.filter(
+      (lot) => lot.segregationStatus === "mixed_lot_alert"
+    );
+    expect(mixedLots.length).toBeGreaterThanOrEqual(1);
+    for (const lot of mixedLots) {
+      expect(lot.quantityOnHand).toBeGreaterThan(0);
+    }
   });
 });

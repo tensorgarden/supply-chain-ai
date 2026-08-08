@@ -49,6 +49,20 @@ export interface Supplier {
   status: SupplierStatus;
 }
 
+export type LotSegregationStatus = "segregated" | "mixed_lot_alert" | "pending_review";
+
+export interface InventoryLot {
+  id: string;
+  lotCode: string;
+  batchNumber: string;
+  expirationDate: string;
+  receivedDate: string;
+  quantityOnHand: number;
+  quantityReserved: number;
+  fifoSequence: number;
+  segregationStatus: LotSegregationStatus;
+}
+
 export interface InventoryItem {
   id: string;
   productId: string;
@@ -59,6 +73,7 @@ export interface InventoryItem {
   reorderQuantity: number;
   lastRestocked: string;
   daysUntilStockout: number | null;
+  lots?: InventoryLot[];
 }
 
 export interface QualityCheck {
