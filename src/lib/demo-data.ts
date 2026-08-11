@@ -95,6 +95,7 @@ export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
     effectivenessObservationsRequired: 3,
     effectivenessObservationsCompleted: 1,
     repeatDefectsObserved: 0,
+    observationProgressLabel: "1/3 steel heats observed, 0 repeat defects",
     verificationEvidence: null,
   },
   {
@@ -118,6 +119,7 @@ export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
     effectivenessObservationsRequired: 2,
     effectivenessObservationsCompleted: 1,
     repeatDefectsObserved: 0,
+    observationProgressLabel: "1/2 first-article inspections observed, 0 repeat defects",
     verificationEvidence: null,
   },
   {
@@ -141,6 +143,7 @@ export const demoSupplierCorrectiveActions: SupplierCorrectiveAction[] = [
     effectivenessObservationsRequired: 3,
     effectivenessObservationsCompleted: 3,
     repeatDefectsObserved: 0,
+    observationProgressLabel: "3/3 receiving lots observed, 0 repeat defects",
     verificationEvidence: "Three consecutive receiving-lot inspections, the supplier drop-test report, and receiving photos recorded zero repeat corner damage after the packaging redesign.",
   },
 ];

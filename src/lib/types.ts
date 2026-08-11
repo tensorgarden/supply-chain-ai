@@ -134,6 +134,7 @@ export interface SupplierCorrectiveAction {
   effectivenessObservationsRequired: number;
   effectivenessObservationsCompleted: number;
   repeatDefectsObserved: number;
+  observationProgressLabel: string;
   verificationEvidence: string | null;
 }
 

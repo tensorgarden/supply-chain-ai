@@ -178,6 +178,32 @@ describe("Supply Chain AI -- demo data integrity", () => {
       }
     });
 
+    it("renders a human-readable observation progress label for every CAPA", () => {
+      for (const action of demoSupplierCorrectiveActions) {
+        expect(action.observationProgressLabel).toMatch(
+          /^\d+\/\d+ (steel heats|first-article inspections|receiving lots) observed, \d+ repeat defects?$/
+        );
+        const [completedStr, requiredStr] =
+          action.observationProgressLabel.match(/^(\d+)\/(\d+)/)!.slice(1);
+        expect(Number(completedStr)).toBe(
+          action.effectivenessObservationsCompleted
+        );
+        expect(Number(requiredStr)).toBe(
+          action.effectivenessObservationsRequired
+        );
+        expect(action.observationProgressLabel).toContain(
+          String(action.repeatDefectsObserved)
+        );
+        expect(action.observationProgressLabel).toContain(
+          action.effectivenessObservationUnit === "steel_heats"
+            ? "steel heats"
+            : action.effectivenessObservationUnit === "first_article_inspections"
+              ? "first-article inspections"
+              : "receiving lots"
+        );
+      }
+    });
+
     it("links each inventory hold to the affected inspection batch", () => {
       const holdStates = new Set(
         demoSupplierCorrectiveActions.map((action) => action.inventoryHoldStatus)
