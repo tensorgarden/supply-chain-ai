@@ -2,6 +2,9 @@ import {
   demoProducts,
   demoSuppliers,
   demoInventory,
+  demoInventoryLots,
+  getFefoPickOrder,
+  getLotRotationConflicts,
   demoQualityChecks,
   demoDemandForecasts,
   demoSupplierRiskExposures,
@@ -238,6 +241,13 @@ function HeroStats() {
 function InventoryRow({ item }: { item: InventoryItem }) {
   const product = findProduct(item.productId);
   const status = stockStatus(item);
+  const itemLots = demoInventoryLots.filter(
+    (lot) => lot.inventoryItemId === item.id
+  );
+  const nextPickLot =
+    itemLots.length > 0 ? getFefoPickOrder(itemLots, item.id)[0] : null;
+  const rotationConflict =
+    itemLots.length > 1 && getLotRotationConflicts(itemLots).length > 0;
   const statusLabel =
     status === "critical"
       ? "Critical"
@@ -263,6 +273,19 @@ function InventoryRow({ item }: { item: InventoryItem }) {
         <div className="text-xs text-slate-500 mt-0.5">
           {product?.sku || ""} · {item.warehouseLocation}
         </div>
+        {nextPickLot && (
+          <div className="text-xs mt-0.5 flex flex-wrap items-center gap-2">
+            <span className="text-slate-500">
+              Pick next: {nextPickLot.lotCode} · expires{" "}
+              {nextPickLot.expirationDate}
+            </span>
+            {rotationConflict && (
+              <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-amber-800">
+                FEFO overrides FIFO
+              </span>
+            )}
+          </div>
+        )}
       </div>
       <div className="w-32 shrink-0">
         <div className="flex justify-between text-xs text-slate-500 mb-1">

@@ -3,6 +3,7 @@ import type {
   Supplier,
   InventoryItem,
   InventoryLot,
+  LotRotationConflict,
   QualityCheck,
   DemandForecast,
   SupplierRiskExposure,
@@ -399,18 +400,56 @@ export const demoPurchaseOrders: PurchaseOrder[] = [
 
 export const demoInventoryLots: InventoryLot[] = [
   // inv_001 prd_001 (Aluminum Sheet) - multiple lots with different expiration dates
-  { id: "lot_001", lotCode: "ALU-001-LOT-A", batchNumber: "ALU-200-B921", expirationDate: "2026-12-31", receivedDate: "2026-05-28", quantityOnHand: 250, quantityReserved: 50, fifoSequence: 1, segregationStatus: "segregated" },
-  { id: "lot_002", lotCode: "ALU-001-LOT-B", batchNumber: "ALU-200-B945", expirationDate: "2027-03-15", receivedDate: "2026-06-10", quantityOnHand: 170, quantityReserved: 30, fifoSequence: 2, segregationStatus: "segregated" },
+  { id: "lot_001", inventoryItemId: "inv_001", lotCode: "ALU-001-LOT-A", batchNumber: "ALU-200-B921", expirationDate: "2026-12-31", receivedDate: "2026-05-28", quantityOnHand: 250, quantityReserved: 50, fifoSequence: 1, segregationStatus: "segregated" },
+  { id: "lot_002", inventoryItemId: "inv_001", lotCode: "ALU-001-LOT-B", batchNumber: "ALU-200-B945", expirationDate: "2027-03-15", receivedDate: "2026-06-10", quantityOnHand: 170, quantityReserved: 30, fifoSequence: 2, segregationStatus: "segregated" },
   // inv_003 prd_003 (Copper Wire) - mixed lot alert scenario
-  { id: "lot_003", lotCode: "COP-003-LOT-1", batchNumber: "COP-12-B2200", expirationDate: "2027-06-15", receivedDate: "2026-04-20", quantityOnHand: 1200, quantityReserved: 300, fifoSequence: 1, segregationStatus: "segregated" },
-  { id: "lot_004", lotCode: "COP-003-LOT-2", batchNumber: "COP-12-B2215", expirationDate: "2027-02-28", receivedDate: "2026-05-20", quantityOnHand: 650, quantityReserved: 100, fifoSequence: 2, segregationStatus: "mixed_lot_alert" },
+  { id: "lot_003", inventoryItemId: "inv_003", lotCode: "COP-003-LOT-1", batchNumber: "COP-12-B2200", expirationDate: "2027-06-15", receivedDate: "2026-04-20", quantityOnHand: 1200, quantityReserved: 300, fifoSequence: 1, segregationStatus: "segregated" },
+  { id: "lot_004", inventoryItemId: "inv_003", lotCode: "COP-003-LOT-2", batchNumber: "COP-12-B2215", expirationDate: "2027-02-28", receivedDate: "2026-05-20", quantityOnHand: 650, quantityReserved: 100, fifoSequence: 2, segregationStatus: "mixed_lot_alert" },
   // inv_006 prd_006 (Capacitors) - high quantity, multiple lots
-  { id: "lot_005", lotCode: "CAP-006-LOT-X", batchNumber: "CAP-100-B3320", expirationDate: "2028-01-30", receivedDate: "2026-04-28", quantityOnHand: 12000, quantityReserved: 3000, fifoSequence: 1, segregationStatus: "segregated" },
-  { id: "lot_006", lotCode: "CAP-006-LOT-Y", batchNumber: "CAP-100-B3355", expirationDate: "2027-11-15", receivedDate: "2026-06-05", quantityOnHand: 10000, quantityReserved: 2000, fifoSequence: 2, segregationStatus: "segregated" },
+  { id: "lot_005", inventoryItemId: "inv_006", lotCode: "CAP-006-LOT-X", batchNumber: "CAP-100-B3320", expirationDate: "2028-01-30", receivedDate: "2026-04-28", quantityOnHand: 12000, quantityReserved: 3000, fifoSequence: 1, segregationStatus: "segregated" },
+  { id: "lot_006", inventoryItemId: "inv_006", lotCode: "CAP-006-LOT-Y", batchNumber: "CAP-100-B3355", expirationDate: "2027-11-15", receivedDate: "2026-06-05", quantityOnHand: 10000, quantityReserved: 2000, fifoSequence: 2, segregationStatus: "segregated" },
   // inv_013 prd_013 (Solder) - nearing expiration
-  { id: "lot_007", lotCode: "SLD-013-LOT-P", batchNumber: "SLD-SNPB-B800", expirationDate: "2026-09-15", receivedDate: "2026-03-18", quantityOnHand: 100, quantityReserved: 20, fifoSequence: 1, segregationStatus: "segregated" },
-  { id: "lot_008", lotCode: "SLD-013-LOT-Q", batchNumber: "SLD-SNPB-B812", expirationDate: "2026-08-20", receivedDate: "2026-05-18", quantityOnHand: 75, quantityReserved: 10, fifoSequence: 2, segregationStatus: "pending_review" },
+  { id: "lot_007", inventoryItemId: "inv_013", lotCode: "SLD-013-LOT-P", batchNumber: "SLD-SNPB-B800", expirationDate: "2026-09-15", receivedDate: "2026-03-18", quantityOnHand: 100, quantityReserved: 20, fifoSequence: 1, segregationStatus: "segregated" },
+  { id: "lot_008", inventoryItemId: "inv_013", lotCode: "SLD-013-LOT-Q", batchNumber: "SLD-SNPB-B812", expirationDate: "2026-08-20", receivedDate: "2026-05-18", quantityOnHand: 75, quantityReserved: 10, fifoSequence: 2, segregationStatus: "pending_review" },
 ];
+
+// FEFO (first expired, first out) pick order: the earliest-expiring lot ships
+// first regardless of when it arrived, so pure FIFO sequencing cannot strand
+// stock that expires sooner.
+export function getFefoPickOrder(
+  lots: InventoryLot[],
+  inventoryItemId: string
+): InventoryLot[] {
+  return lots
+    .filter((lot) => lot.inventoryItemId === inventoryItemId)
+    .sort((a, b) => {
+      const dateOrder = a.expirationDate.localeCompare(b.expirationDate);
+      return dateOrder !== 0 ? dateOrder : a.fifoSequence - b.fifoSequence;
+    });
+}
+
+// Surface lots whose FEFO rank disagrees with their FIFO arrival sequence,
+// so warehouse operators can see when expiration must override receipt order.
+export function getLotRotationConflicts(
+  lots: InventoryLot[]
+): LotRotationConflict[] {
+  const conflicts: LotRotationConflict[] = [];
+  const itemIds = [...new Set(lots.map((lot) => lot.inventoryItemId))];
+  for (const inventoryItemId of itemIds) {
+    const fefoOrder = getFefoPickOrder(lots, inventoryItemId);
+    fefoOrder.forEach((lot, index) => {
+      if (lot.fifoSequence !== index + 1) {
+        conflicts.push({
+          inventoryItemId,
+          lotId: lot.id,
+          fifoSequence: lot.fifoSequence,
+          fefoRank: index + 1,
+        });
+      }
+    });
+  }
+  return conflicts;
+}
 
 const pendingStatuses = new Set(["pending", "confirmed", "in_transit", "delayed"]);
 

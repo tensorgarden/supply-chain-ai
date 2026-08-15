@@ -10,6 +10,8 @@ import {
   demoPurchaseOrders,
   demoSupplierCorrectiveActions,
   demoMetrics,
+  getFefoPickOrder,
+  getLotRotationConflicts,
 } from "@/lib/demo-data";
 
 describe("Supply Chain AI -- demo data integrity", () => {
@@ -739,6 +741,46 @@ describe("Supply Chain AI -- inventory lot management (FIFO & expiration)", () =
     expect(mixedLots.length).toBeGreaterThanOrEqual(1);
     for (const lot of mixedLots) {
       expect(lot.quantityOnHand).toBeGreaterThan(0);
+    }
+  });
+
+  it("every lot links to an existing inventory item", () => {
+    const itemIds = new Set(demoInventory.map((item) => item.id));
+    for (const lot of demoInventoryLots) {
+      expect(itemIds.has(lot.inventoryItemId)).toBe(true);
+    }
+  });
+
+  it("FEFO pick order prioritizes the earliest-expiring lot over FIFO arrival order", () => {
+    const solderOrder = getFefoPickOrder(demoInventoryLots, "inv_013");
+    expect(solderOrder.map((lot) => lot.lotCode)).toEqual([
+      "SLD-013-LOT-Q",
+      "SLD-013-LOT-P",
+    ]);
+    expect(solderOrder[0].expirationDate).toBe("2026-08-20");
+    expect(solderOrder[0].fifoSequence).toBe(2);
+  });
+
+  it("rotation conflicts are flagged when a later-arrived lot expires sooner", () => {
+    const conflicts = getLotRotationConflicts(demoInventoryLots);
+    const solderConflicts = conflicts.filter(
+      (conflict) => conflict.inventoryItemId === "inv_013"
+    );
+    expect(solderConflicts.length).toBe(2);
+    const aluminumConflicts = conflicts.filter(
+      (conflict) => conflict.inventoryItemId === "inv_001"
+    );
+    expect(aluminumConflicts.length).toBe(0);
+  });
+
+  it("FEFO order respects expiration dates for every multi-lot item", () => {
+    const itemIds = [
+      ...new Set(demoInventoryLots.map((lot) => lot.inventoryItemId)),
+    ];
+    for (const itemId of itemIds) {
+      const order = getFefoPickOrder(demoInventoryLots, itemId);
+      const dates = order.map((lot) => lot.expirationDate);
+      expect(dates).toEqual([...dates].sort());
     }
   });
 });

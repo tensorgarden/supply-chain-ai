@@ -53,6 +53,7 @@ export type LotSegregationStatus = "segregated" | "mixed_lot_alert" | "pending_r
 
 export interface InventoryLot {
   id: string;
+  inventoryItemId: string;
   lotCode: string;
   batchNumber: string;
   expirationDate: string;
@@ -61,6 +62,13 @@ export interface InventoryLot {
   quantityReserved: number;
   fifoSequence: number;
   segregationStatus: LotSegregationStatus;
+}
+
+export interface LotRotationConflict {
+  inventoryItemId: string;
+  lotId: string;
+  fifoSequence: number;
+  fefoRank: number;
 }
 
 export interface InventoryItem {
