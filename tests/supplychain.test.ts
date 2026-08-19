@@ -12,6 +12,8 @@ import {
   demoMetrics,
   getFefoPickOrder,
   getLotRotationConflicts,
+  getExpirySafeFefoOrder,
+  DEMO_AS_OF_DATE,
 } from "@/lib/demo-data";
 
 describe("Supply Chain AI -- demo data integrity", () => {
@@ -782,5 +784,64 @@ describe("Supply Chain AI -- inventory lot management (FIFO & expiration)", () =
       const dates = order.map((lot) => lot.expirationDate);
       expect(dates).toEqual([...dates].sort());
     }
+  });
+
+  describe("expiry-gated FEFO picking", () => {
+    it("blocks lots below the shipment shelf-life floor even when raw FEFO ranks them first", () => {
+      const rawOrder = getFefoPickOrder(demoInventoryLots, "inv_013");
+      const gated = getExpirySafeFefoOrder(
+        demoInventoryLots,
+        "inv_013",
+        DEMO_AS_OF_DATE
+      );
+
+      expect(rawOrder.map((lot) => lot.lotCode)).toEqual([
+        "SLD-013-LOT-Q",
+        "SLD-013-LOT-P",
+      ]);
+      expect(gated.blockedLots.map((blockedLot) => blockedLot.lotCode)).toEqual([
+        "SLD-013-LOT-Q",
+      ]);
+      expect(gated.pickOrder.map((lot) => lot.lotCode)).toEqual([
+        "SLD-013-LOT-P",
+      ]);
+    });
+
+    it("keeps FEFO order among lots that clear the shelf-life floor", () => {
+      const gated = getExpirySafeFefoOrder(
+        demoInventoryLots,
+        "inv_001",
+        DEMO_AS_OF_DATE
+      );
+
+      expect(gated.blockedLots).toHaveLength(0);
+      expect(gated.pickOrder.map((lot) => lot.lotCode)).toEqual([
+        "ALU-001-LOT-A",
+        "ALU-001-LOT-B",
+      ]);
+    });
+
+    it("reports days-to-expiration for blocked lots so disposition review stays evidence-backed", () => {
+      const gated = getExpirySafeFefoOrder(
+        demoInventoryLots,
+        "inv_013",
+        DEMO_AS_OF_DATE
+      );
+      const blockedLot = gated.blockedLots.find(
+        (blocked) => blocked.lotCode === "SLD-013-LOT-Q"
+      );
+
+      expect(blockedLot).toBeDefined();
+      expect(blockedLot?.daysToExpiration).toBe(12);
+      expect(blockedLot?.daysToExpiration ?? 0).toBeLessThan(
+        blockedLot?.shelfLifeFloorDays ?? 0
+      );
+    });
+
+    it("requires every demo lot to define a positive shipment shelf-life floor", () => {
+      for (const lot of demoInventoryLots) {
+        expect(lot.shelfLifeFloorDays).toBeGreaterThan(0);
+      }
+    });
   });
 });

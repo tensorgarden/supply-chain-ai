@@ -62,6 +62,7 @@ export interface InventoryLot {
   quantityReserved: number;
   fifoSequence: number;
   segregationStatus: LotSegregationStatus;
+  shelfLifeFloorDays: number;
 }
 
 export interface LotRotationConflict {
@@ -69,6 +70,19 @@ export interface LotRotationConflict {
   lotId: string;
   fifoSequence: number;
   fefoRank: number;
+}
+
+export interface ExpiryBlockedLot {
+  lotId: string;
+  lotCode: string;
+  daysToExpiration: number;
+  shelfLifeFloorDays: number;
+  reason: string;
+}
+
+export interface ExpirySafeFefoResult {
+  pickOrder: InventoryLot[];
+  blockedLots: ExpiryBlockedLot[];
 }
 
 export interface InventoryItem {

@@ -3,7 +3,8 @@ import {
   demoSuppliers,
   demoInventory,
   demoInventoryLots,
-  getFefoPickOrder,
+  DEMO_AS_OF_DATE,
+  getExpirySafeFefoOrder,
   getLotRotationConflicts,
   demoQualityChecks,
   demoDemandForecasts,
@@ -16,6 +17,7 @@ import type {
   Product,
   Supplier,
   InventoryItem,
+  ExpirySafeFefoResult,
   QualityCheck,
   DemandForecast,
   SupplierRiskExposure,
@@ -244,8 +246,11 @@ function InventoryRow({ item }: { item: InventoryItem }) {
   const itemLots = demoInventoryLots.filter(
     (lot) => lot.inventoryItemId === item.id
   );
-  const nextPickLot =
-    itemLots.length > 0 ? getFefoPickOrder(itemLots, item.id)[0] : null;
+  const expiryGate: ExpirySafeFefoResult =
+    itemLots.length > 0
+      ? getExpirySafeFefoOrder(itemLots, item.id, DEMO_AS_OF_DATE)
+      : { pickOrder: [], blockedLots: [] };
+  const nextPickLot = expiryGate.pickOrder[0] ?? null;
   const rotationConflict =
     itemLots.length > 1 && getLotRotationConflicts(itemLots).length > 0;
   const statusLabel =
@@ -284,6 +289,20 @@ function InventoryRow({ item }: { item: InventoryItem }) {
                 FEFO overrides FIFO
               </span>
             )}
+          </div>
+        )}
+        {expiryGate.blockedLots.length > 0 && (
+          <div className="text-xs mt-0.5 flex flex-wrap items-center gap-2">
+            {expiryGate.blockedLots.map((blockedLot) => (
+              <span
+                key={blockedLot.lotId}
+                className="inline-flex items-center rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-red-700"
+                title={blockedLot.reason}
+              >
+                Expiry hold: {blockedLot.lotCode} · {blockedLot.daysToExpiration}d
+                shelf life left
+              </span>
+            ))}
           </div>
         )}
       </div>
